@@ -10,31 +10,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #3b82f6;
-            --secondary: #60a5fa;
-            --background: #f8fafc;
+            --primary: #1976d2;
+            --secondary: #42a5f5;
+            --background: #f5f5f5;
             --card-bg: #ffffff;
-            --text: #1e293b;
-            --accent: #2563eb;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --text: #212121;
+            --accent: #0288d1;
         }
         .dark {
-            --background: #1e293b;
-            --card-bg: #334155;
-            --text: #e2e8f0;
-        }
-        .high-contrast {
-            --primary: #ffd700;
-            --secondary: #ffff00;
-            --background: #000000;
-            --card-bg: #1c2526;
-            --text: #ffffff;
+            --background: #212121;
+            --card-bg: #424242;
+            --text: #e0e0e0;
         }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Roboto', sans-serif;
             background: var(--background);
             color: var(--text);
             margin: 0;
@@ -43,7 +35,7 @@
             flex-direction: column;
             scrollbar-width: thin;
             scrollbar-color: var(--primary) #e0e0e0;
-            font-size: clamp(14px, 2.5vw, 16px);
+            font-size: 14px;
             overscroll-behavior: none;
         }
         .container {
@@ -55,39 +47,38 @@
         }
         .content {
             flex: 1;
-            padding: 1rem;
+            padding: 0.5rem;
             overflow-y: auto;
-            padding-bottom: 5rem;
+            padding-bottom: 4rem; /* Space for bottom nav */
         }
         .screen { display: none; }
-        .screen.active { display: block; animation: slideTransition 0.4s ease-in-out; }
+        .screen.active { display: block; animation: fadeIn 0.3s ease-in-out; }
         .card {
             background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-        }
-        .btn {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 0.75rem 1.5rem;
             border-radius: 8px;
-            transition: transform 0.2s, background 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-2px); }
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background 0.3s, transform 0.2s;
             position: relative;
             overflow: hidden;
             cursor: pointer;
-            font-weight: 500;
             text-align: center;
+            font-size: 0.875rem;
         }
         .btn::after {
             content: '';
             position: absolute;
+            top: 50%;
+            left: 50%;
             width: 0;
             height: 0;
             background: rgba(255, 255, 255, 0.3);
@@ -95,38 +86,39 @@
             transform: translate(-50%, -50%);
             transition: width 0.3s, height 0.3s;
         }
-        .btn.ripple::after {
-            width: 300px;
-            height: 300px;
+        .btn:hover::after {
+            width: 200px;
+            height: 200px;
         }
         .btn:hover {
+            background: var(--secondary);
             transform: scale(1.05);
         }
         .btn:disabled {
-            background: #d1d5db;
+            background: #bdbdbd;
             cursor: not-allowed;
         }
         input, select, textarea {
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            padding: 0.75rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 0.5rem;
             width: 100%;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
             transition: border-color 0.3s, box-shadow 0.3s;
-            background: var(--card-bg);
-            color: var(--text);
+            font-size: 0.875rem;
         }
         .dark input, .dark select, .dark textarea {
-            background: #475569;
-            border-color: #6b7280;
+            background: #616161;
+            border-color: #757575;
+            color: var(--text);
         }
         input:focus, select:focus, textarea:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
             outline: none;
         }
         input.error, select.error {
-            border-color: #ef4444;
+            border-color: #d32f2f;
             animation: shake 0.3s;
         }
         .bottom-nav {
@@ -135,10 +127,10 @@
             left: 0;
             right: 0;
             background: var(--card-bg);
-            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: space-around;
-            padding: 0.75rem 0;
+            padding: 0.5rem 0;
             z-index: 10;
         }
         .nav-item {
@@ -149,63 +141,15 @@
             font-size: 0.75rem;
             cursor: pointer;
             padding: 0.5rem;
-            transition: color 0.3s, transform 0.3s;
+            transition: color 0.2s;
         }
         .nav-item.active, .nav-item:hover {
             color: var(--primary);
-            transform: scale(1.1);
         }
         .nav-item img {
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             margin-bottom: 0.25rem;
-            transition: transform 0.3s;
-        }
-        .nav-item.active img {
-            transform: rotate(360deg);
-        }
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: -100%;
-            width: 80%;
-            max-width: 280px;
-            height: 100%;
-            background: var(--card-bg);
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
-            transition: left 0.3s ease;
-            z-index: 20;
-        }
-        .sidebar.active {
-            left: 0;
-        }
-        .sidebar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: var(--primary);
-            color: white;
-        }
-        .sidebar-close {
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-        .sidebar-content ul {
-            list-style: none;
-            padding: 1rem;
-        }
-        .sidebar-content a {
-            display: block;
-            padding: 0.75rem;
-            color: var(--text);
-            text-decoration: none;
-            border-radius: 8px;
-            transition: background 0.2s;
-        }
-        .sidebar-content a:hover {
-            background: var(--primary);
-            color: white;
         }
         .modal {
             position: fixed;
@@ -213,7 +157,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -228,112 +172,65 @@
         }
         .modal-content {
             background: var(--card-bg);
-            border-radius: 12px;
-            padding: 1.5rem;
+            border-radius: 8px;
+            padding: 1rem;
             max-width: 90%;
-            width: 320px;
+            width: 300px;
             animation: slideIn 0.3s;
         }
         .toast {
             position: fixed;
-            bottom: 5.5rem;
+            bottom: 4.5rem;
             left: 50%;
             transform: translateX(-50%);
-            background: #22c55e;
+            background: #4caf50;
             color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
             opacity: 0;
-            transition: opacity 0.3s ease-in-out;
+            transition: opacity 0.3s;
             z-index: 20;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             max-width: 90%;
             text-align: center;
         }
         .toast.show { opacity: 1; }
         .progress-bar {
-            height: 4px;
+            height: 3px;
             background: var(--primary);
             transition: width 0.3s;
-            animation: pulse 1.5s infinite;
         }
         .progress-circle {
-            width: 24px;
-            height: 24px;
-            border: 3px solid #d1d5db;
-            border-top: 3px solid var(--primary);
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e0e0e0;
+            border-top: 2px solid var(--primary);
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 1s linear infinite;
         }
         .dark .progress-circle {
-            border-color: #6b7280;
+            border-color: #616161;
+            border-top-color: var(--primary);
         }
         .fab {
             position: fixed;
-            bottom: 6rem;
-            right: 1rem;
+            bottom: 5rem;
+            right: 0.5rem;
             background: var(--primary);
             color: white;
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             cursor: pointer;
-            font-size: 1.5rem;
-            transition: transform 0.3s;
+            font-size: 1.25rem;
         }
-        .fab.rotate {
-            transform: rotate(360deg);
-        }
-        .avatar-pulse {
-            animation: pulseAvatar 1s ease-in-out;
-        }
-        .typing-indicator {
-            padding: 0.75rem;
-            background: var(--card-bg);
-            border-radius: 12px;
-            max-width: 80%;
-            display: flex;
-        }
-        .typing-indicator span {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--primary);
-            border-radius: 50%;
-            margin: 0 3px;
-            animation: bounce 0.6s infinite alternate;
-        }
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
-        .chat-message {
-            animation: popIn 0.3s ease-out;
-        }
-        .timeline-card {
-            position: relative;
-            margin-left: 1.5rem;
-            border-left: 2px solid var(--primary);
-            padding-left: 1rem;
-            transition: transform 0.3s;
-        }
-        .timeline-card:hover {
-            transform: translateX(5px);
-        }
-        .voice-wave {
-            display: none;
-            height: 20px;
-            background: linear-gradient(90deg, var(--primary) 20%, transparent 80%);
-            animation: wave 1s infinite;
-        }
-        .voice-wave.active {
-            display: block;
-        }
-        @keyframes slideTransition {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         @keyframes slideIn {
             from { transform: translateY(-20px); opacity: 0; }
@@ -347,28 +244,6 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        @keyframes pulse {
-            0% { opacity: 0.7; }
-            50% { opacity: 1; }
-            100% { opacity: 0.7; }
-        }
-        @keyframes pulseAvatar {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-            100% { transform: scale(1); }
-        }
-        @keyframes bounce {
-            from { transform: translateY(0); }
-            to { transform: translateY(-5px); }
-        }
-        @keyframes popIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        @keyframes wave {
-            0% { background-position: 0 0; }
-            100% { background-position: 20px 0; }
-        }
         @media (min-width: 640px) {
             .container { max-width: 640px; margin: 0 auto; }
         }
@@ -376,33 +251,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h3 class="text-lg font-bold">Menu</h3>
-                <div class="sidebar-close" onclick="toggleSidebar()">×</div>
-            </div>
-            <div class="sidebar-content">
-                <ul>
-                    <li><a href="#" onclick="showSettings('theme')">Theme Settings</a></li>
-                    <li><a href="#" onclick="clearStorage()">Clear Data</a></li>
-                    <li><a href="#" onclick="logout()">Logout</a></li>
-                </ul>
-                <div class="settings-page" id="themeSettings" style="display: none;">
-                    <h4 class="text-sm font-bold mb-2">Theme</h4>
-                    <label class="block mb-2 text-xs">
-                        <input type="radio" name="theme" value="light" onchange="setTheme('light')"> Light
-                    </label>
-                    <label class="block mb-2 text-xs">
-                        <input type="radio" name="theme" value="dark" onchange="setTheme('dark')"> Dark
-                    </label>
-                    <label class="block mb-2 text-xs">
-                        <input type="radio" name="theme" value="high-contrast" onchange="setTheme('high-contrast')"> High Contrast
-                    </label>
-                </div>
-            </div>
-        </div>
-
         <!-- Content -->
         <div class="content">
             <!-- Loading Screen -->
@@ -412,7 +260,7 @@
 
             <!-- Signup Screen -->
             <div id="signupScreen" class="screen card">
-                <h2 class="text-lg font-bold mb-4">Sign Up</h2>
+                <h2 class="text-base font-bold mb-3">Sign Up</h2>
                 <div class="progress-bar" style="width: 33%"></div>
                 <input id="nameInput" type="text" placeholder="Full Name" aria-label="Full Name">
                 <input id="birthYearInput" type="number" placeholder="Birth Year" aria-label="Birth Year">
@@ -428,43 +276,34 @@
 
             <!-- Dashboard Screen -->
             <div id="dashboardScreen" class="screen">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-lg font-bold">Dashboard</h2>
-                    <button class="btn" onclick="toggleSidebar()">☰</button>
-                </div>
+                <h2 class="text-base font-bold mb-3">Dashboard</h2>
                 <div class="card">
                     <div class="flex items-center">
-                        <div id="userAvatar" class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl mr-4"></div>
+                        <div id="userAvatar" class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center text-lg mr-3"></div>
                         <div>
-                            <p id="welcomeMsg" class="text-sm font-medium"></p>
-                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                                <div id="profileProgress" class="bg-primary h-2.5 rounded-full" style="width: 0%"></div>
+                            <p id="welcomeMsg" class="text-xs"></p>
+                            <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                                <div id="profileProgress" class="bg-primary h-2 rounded-full" style="width: 0%"></div>
                             </div>
-                            <p class="text-xs mt-1">Profile Completeness</p>
-                            <p class="text-xs">Points: <span id="userPoints">0</span></p>
+                            <p class="text-xs">Profile Completeness</p>
                         </div>
                     </div>
                 </div>
                 <div class="card">
-                    <h3 class="text-sm font-bold mb-3">Quick Actions</h3>
+                    <h3 class="text-sm font-bold mb-2">Quick Actions</h3>
                     <button id="onlineBtn" class="btn w-full mb-2">Meet Lawyer Online</button>
                     <button id="nearbyBtn" class="btn w-full mb-2">Find Lawyer Nearby</button>
-                    <button id="profileBtn" class="btn w-full mb-2">Edit Profile</button>
-                    <button id="chatBtn" class="btn w-full">Chat Support</button>
+                    <button id="profileBtn" class="btn w-full">Edit Profile</button>
                 </div>
                 <div class="card">
-                    <h3 class="text-sm font-bold mb-3">Recent Appointments</h3>
+                    <h3 class="text-sm font-bold mb-2">Recent Appointments</h3>
                     <div id="recentAppointments" class="text-xs"></div>
-                </div>
-                <div class="card">
-                    <h3 class="text-sm font-bold mb-3">AI Suggestions</h3>
-                    <p id="aiSuggestions" class="text-xs"></p>
                 </div>
             </div>
 
             <!-- Location Screen -->
             <div id="locationScreen" class="screen card">
-                <h2 class="text-lg font-bold mb-4">Select Your District</h2>
+                <h2 class="text-base font-bold mb-3">Select Your District</h2>
                 <div class="progress-bar" style="width: 66%"></div>
                 <input id="districtInput" type="text" list="districtList" placeholder="Type or select district" aria-label="District">
                 <datalist id="districtList">
@@ -489,14 +328,31 @@
 
             <!-- Lawyer Screen -->
             <div id="lawyerScreen" class="screen card">
-                <h2 class="text-lg font-bold mb-4">Available Lawyers</h2>
-                <p id="noLawyerMsg" class="text-xs text-center mb-4 hidden">No legal professionals available in this district.</p>
-                <div id="lawyerList"></div>
+                <h2 class="text-base font-bold mb-3">Available Lawyer</h2>
+                <p id="noLawyerMsg" class="text-xs text-center mb-3 hidden">No legal professionals available in this district.</p>
+                <div id="lawyerInfo">
+                    <div class="card">
+                        <p class="text-xs"><strong>Name:</strong> Gayathri</p>
+                        <p class="text-xs"><strong>Location:</strong> Alappuzha District Court</p>
+                        <p class="text-xs"><strong>Status:</strong> <span id="lawyerStatus">Available Now</span></p>
+                        <p class="text-xs"><strong>Rating:</strong> 5.0 (80 reviews)</p>
+                        <button id="viewLawyerProfile" class="btn w-full mt-2">View Profile</button>
+                        <select id="timeSlotInput" aria-label="Select Time Slot" class="mt-2">
+                            <option value="" disabled selected>Select Time Slot</option>
+                        </select>
+                        <textarea id="notesInput" placeholder="Add Notes (Optional)" class="h-16 text-xs" aria-label="Notes"></textarea>
+                        <label class="flex items-center mb-2 text-xs">
+                            <input type="checkbox" id="priorityInput" class="mr-2"> High Priority
+                        </label>
+                        <input id="attachmentInput" type="file" accept="image/*,application/pdf" aria-label="Attachment">
+                        <button id="bookBtn" class="btn w-full mt-2" disabled>Book Appointment</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Online Booking Screen -->
             <div id="onlineScreen" class="screen card">
-                <h2 class="text-lg font-bold mb-4">Book Online Appointment</h2>
+                <h2 class="text-base font-bold mb-3">Book Online Appointment</h2>
                 <div class="progress-bar" style="width: 100%"></div>
                 <select id="onlineCaseType" aria-label="Case Type">
                     <option value="" disabled selected>Select Case Type</option>
@@ -516,9 +372,7 @@
                 <select id="timeSlotInputOnline" aria-label="Select Time Slot">
                     <option value="" disabled selected>Select Time Slot</option>
                 </select>
-                <textarea id="notesInputOnline" placeholder="Add Notes (Optional)" class="h-20 text-xs" aria-label="Notes"></textarea>
-                <div class="voice-wave" id="voiceWaveOnline"></div>
-                <button id="voiceNotesOnline" class="btn w-full mb-2">Add Notes via Voice</button>
+                <textarea id="notesInputOnline" placeholder="Add Notes (Optional)" class="h-16 text-xs" aria-label="Notes"></textarea>
                 <label class="flex items-center mb-2 text-xs">
                     <input type="checkbox" id="recurringInput" class="mr-2"> Recurring Appointment
                 </label>
@@ -528,8 +382,8 @@
 
             <!-- Profile Screen -->
             <div id="profileScreen" class="screen card">
-                <h2 class="text-lg font-bold mb-4">Your Profile</h2>
-                <div id="userAvatar" class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center text-2xl mb-4 mx-auto"></div>
+                <h2 class="text-base font-bold mb-3">Your Profile</h2>
+                <div id="userAvatar" class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl mb-3"></div>
                 <input id="editNameInput" type="text" placeholder="Full Name" aria-label="Edit Name">
                 <input id="editBirthYearInput" type="number" placeholder="Birth Year" aria-label="Edit Birth Year">
                 <select id="editCaseTypeInput" aria-label="Edit Case Type">
@@ -550,13 +404,12 @@
                     <option value="16">Large</option>
                     <option value="18">Extra Large</option>
                 </select>
-                <button id="exportProfileBtn" class="btn w-full mb-2">Export Profile</button>
                 <button id="saveProfileBtn" class="btn w-full">Save Changes</button>
             </div>
 
             <!-- Appointments Screen -->
             <div id="appointmentsScreen" class="screen card">
-                <h2 class="text-lg font-bold mb-4">Your Appointments</h2>
+                <h2 class="text-base font-bold mb-3">Your Appointments</h2>
                 <input id="searchAppointments" type="text" placeholder="Search by case type or date" aria-label="Search Appointments">
                 <select id="filterAppointments" aria-label="Filter Appointments">
                     <option value="All">All</option>
@@ -565,62 +418,31 @@
                     <option value="Cancelled">Cancelled</option>
                     <option value="Completed">Completed</option>
                 </select>
-                <button id="timelineViewBtn" class="btn w-full mb-2">Timeline View</button>
-                <div id="appointmentsList" class="mt-4"></div>
+                <div id="appointmentsList" class="mt-3"></div>
                 <button id="exportAppointmentsBtn" class="btn w-full mt-2">Export as CSV</button>
-            </div>
-
-            <!-- Chat Screen -->
-            <div id="chatScreen" class="screen card">
-                <h2 class="text-lg font-bold mb-4">Chat Support</h2>
-                <div id="chatMessages" class="h-80 overflow-y-auto mb-4"></div>
-                <div class="flex flex-col">
-                    <div class="flex mb-2">
-                        <input id="chatInput" type="text" placeholder="Ask a legal question (*bold*, _italic_)" class="flex-1 mr-2" aria-label="Chat Input">
-                        <label for="chatAttachment" class="btn">📎</label>
-                        <input id="chatAttachment" type="file" accept="image/*,application/pdf" style="display: none;">
-                        <button id="sendChatBtn" class="btn" disabled>Send</button>
-                    </div>
-                    <button id="voiceChatBtn" class="btn w-full">Voice Input</button>
-                </div>
             </div>
 
             <!-- Confirmation Screen -->
             <div id="confirmationScreen" class="screen card text-center">
-                <h2 class="text-lg font-bold mb-4">Appointment Booked!</h2>
-                <div id="handshakeAnimation" class="w-32 h-32 mx-auto"></div>
-                <p class="text-xs mb-4">Your appointment has been confirmed.</p>
-                <p class="text-xs mb-4">Blockchain Hash: <span id="blockchainHash"></span></p>
-                <label class="flex items-center justify-center mb-2 text-xs">
-                    <input type="checkbox" id="reminderInput" class="mr-2"> Set Reminder (24h before)
-                </label>
-                <button id="arPreviewBtn" class="btn w-full mb-2">AR Office Preview</button>
+                <h2 class="text-base font-bold mb-3">Appointment Booked!</h2>
+                <div id="handshakeAnimation" class="w-24 h-24 mx-auto"></div>
+                <p class="text-xs mb-3">Your appointment has been confirmed.</p>
                 <button id="previewPDFBtn" class="btn w-full mb-2">Preview PDF</button>
                 <button id="viewAppointmentsBtn" class="btn w-full">View Appointments</button>
             </div>
 
             <!-- PDF Preview Screen -->
             <div id="pdfPreviewScreen" class="screen card">
-                <h2 class="text-lg font-bold mb-4">PDF Preview</h2>
-                <div id="pdfPreview" class="border p-4 overflow-auto"></div>
+                <h2 class="text-base font-bold mb-3">PDF Preview</h2>
+                <div id="pdfPreview" class="border p-3"></div>
                 <button id="downloadPDFBtn" class="btn w-full mt-2">Download PDF</button>
                 <button id="backPDFBtn" class="btn w-full mt-2">Back</button>
-            </div>
-
-            <!-- AR Preview Screen -->
-            <div id="arPreviewScreen" class="screen card">
-                <h2 class="text-lg font-bold mb-4">AR Office Preview</h2>
-                <p class="text-xs mb-4">Imagine viewing the lawyer's office in AR! (Mock placeholder)</p>
-                <div class="bg-gray-200 dark:bg-gray-700 h-48 flex items-center justify-center">
-                    <p class="text-xs">AR View Coming Soon</p>
-                </div>
-                <button id="backARBtn" class="btn w-full mt-2">Back</button>
             </div>
 
             <!-- Modal -->
             <div id="modal" class="modal">
                 <div class="modal-content">
-                    <p id="modalMessage" class="mb-4 text-xs"></p>
+                    <p id="modalMessage" class="mb-3 text-xs"></p>
                     <div class="flex justify-end gap-2">
                         <button id="modalCancel" class="btn">Cancel</button>
                         <button id="modalConfirm" class="btn">Confirm</button>
@@ -632,20 +454,16 @@
         <!-- Bottom Navigation -->
         <div class="bottom-nav">
             <div class="nav-item" data-screen="dashboardScreen">
-                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z'/></svg>" alt="Dashboard">
+                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231976d2'><path d='M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z'/></svg>" alt="Dashboard">
                 <span>Dashboard</span>
             </div>
             <div class="nav-item" data-screen="appointmentsScreen">
-                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.89-1.99 2L3 19c0 1.11.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.11-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z'/></svg>" alt="Appointments">
+                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231976d2'><path d='M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.89-1.99 2L3 19c0 1.11.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.11-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z'/></svg>" alt="Appointments">
                 <span>Appointments</span>
             </div>
             <div class="nav-item" data-screen="profileScreen">
-                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" alt="Profile">
+                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231976d2'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" alt="Profile">
                 <span>Profile</span>
-            </div>
-            <div class="nav-item" data-screen="chatScreen">
-                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z'/></svg>" alt="Chat">
-                <span>Chat</span>
             </div>
         </div>
     </div>
@@ -658,18 +476,6 @@
 
     <script>
         const { jsPDF } = window.jspdf;
-        const lawyers = [
-            { name: 'Gayathri', district: 'Alappuzha', location: 'Alappuzha District Court', rating: 5.0, reviews: 80 },
-            { name: 'Arun', district: 'Ernakulam', location: 'Ernakulam High Court', rating: 4.8, reviews: 65 },
-            { name: 'Priya', district: 'Thiruvananthapuram', location: 'Thiruvananthapuram District Court', rating: 4.9, reviews: 90 }
-        ];
-
-        // Initialize data
-        let userData = JSON.parse(localStorage.getItem('userData')) || null;
-        let chatHistory = JSON.parse(localStorage.getItem('chatHistory')) || [];
-        let userPoints = JSON.parse(localStorage.getItem('userPoints')) || 0;
-        let lastChatTime = 0;
-        let recognition = null;
 
         // Screen management
         const screens = document.querySelectorAll('.screen');
@@ -683,9 +489,6 @@
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.toggle('active', item.dataset.screen === screenId);
             });
-            if (screenId === 'appointmentsScreen') displayAppointments();
-            if (screenId === 'chatScreen') renderChat();
-            if (screenId === 'dashboardScreen') updateAISuggestions();
         }
 
         // Toast notifications
@@ -706,18 +509,10 @@
             const handler = () => {
                 modal.classList.remove('active');
                 onConfirm();
+                confirmBtn.removeEventListener('click', handler);
             };
-            confirmBtn.onclick = handler;
-            cancelBtn.onclick = () => modal.classList.remove('active');
-        }
-
-        // Sidebar
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-        }
-        function showSettings(page) {
-            document.querySelectorAll('.settings-page').forEach(p => p.style.display = 'none');
-            document.getElementById(`${page}Settings`).style.display = 'block';
+            confirmBtn.addEventListener('click', handler);
+            cancelBtn.addEventListener('click', () => modal.classList.remove('active'));
         }
 
         // Handshake animation
@@ -731,16 +526,24 @@
             });
         }
 
-        // Theme management
-        function setTheme(theme) {
-            document.body.classList.remove('dark', 'high-contrast');
-            if (theme !== 'light') document.body.classList.add(theme);
-            localStorage.setItem('theme', theme);
-            document.querySelector(`input[name="theme"][value="${theme}"]`).checked = true;
-            showToast(`Switched to ${theme} theme`);
+        // Local storage and user data
+        let userData = JSON.parse(localStorage.getItem('userData'));
+        if (userData) {
+            showScreen(localStorage.getItem('lastScreen') || 'dashboardScreen');
+            updateAvatar();
+            updateProfileProgress();
+            document.getElementById('welcomeMsg').textContent = `Welcome, ${userData.name}!`;
+        } else {
+            showScreen('signupScreen');
         }
-        if (localStorage.getItem('theme')) {
-            setTheme(localStorage.getItem('theme'));
+
+        // Theme toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+        }
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark');
         }
 
         // Input validation
@@ -753,29 +556,17 @@
             });
         }
 
-        // Ripple effect
-        document.querySelectorAll('.btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const rect = btn.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                btn.style.setProperty('--ripple-x', `${x}px`);
-                btn.style.setProperty('--ripple-y', `${y}px`);
-                btn.classList.add('ripple');
-                setTimeout(() => btn.classList.remove('ripple'), 300);
-            });
-        });
+        // Signup validation
+        const signupInputs = [document.getElementById('nameInput'), document.getElementById('birthYearInput'), document.getElementById('caseTypeInput')];
+        signupInputs.forEach(input => input.addEventListener('input', () => validateInputs(signupInputs, document.getElementById('signupBtn'))));
 
-        // Initialize user
-        if (userData) {
-            showScreen(localStorage.getItem('lastScreen') || 'dashboardScreen');
-            updateAvatar();
-            updateProfileProgress();
-            document.getElementById('welcomeMsg').textContent = `Welcome, ${userData.name}!`;
-            document.getElementById('userPoints').textContent = userPoints;
-        } else {
-            showScreen('signupScreen');
-        }
+        // Online booking validation
+        const onlineInputs = [document.getElementById('onlineCaseType'), document.getElementById('conferenceMethod'), document.getElementById('timeSlotInputOnline')];
+        onlineInputs.forEach(input => input.addEventListener('input', () => validateInputs(onlineInputs, document.getElementById('bookOnlineBtn'))));
+
+        // Lawyer booking validation
+        const lawyerInputs = [document.getElementById('timeSlotInput')];
+        lawyerInputs.forEach(input => input.addEventListener('input', () => validateInputs(lawyerInputs, document.getElementById('bookBtn'))));
 
         // Avatar generation
         function updateAvatar() {
@@ -788,8 +579,6 @@
                 } else if (userData) {
                     avatar.textContent = userData.name.charAt(0).toUpperCase();
                 }
-                avatar.classList.add('avatar-pulse');
-                setTimeout(() => avatar.classList.remove('avatar-pulse'), 1000);
             });
         }
 
@@ -799,25 +588,11 @@
             const filled = fields.filter(field => userData[field]).length;
             const progress = (filled / fields.length) * 100;
             document.getElementById('profileProgress').style.width = `${progress}%`;
-            if (filled === fields.length && userPoints < 50) {
-                userPoints += 10;
-                localStorage.setItem('userPoints', userPoints);
-                document.getElementById('userPoints').textContent = userPoints;
-                showToast('Earned 10 points for completing profile!');
-            }
-        }
-
-        // AI suggestions
-        function updateAISuggestions() {
-            const suggestions = userData.caseType ? 
-                `For ${userData.caseType} cases, consider preparing documents like contracts or evidence logs. Would you like resources?` : 
-                'Complete your profile to get personalized legal suggestions.';
-            document.getElementById('aiSuggestions').textContent = suggestions;
         }
 
         // Generate time slots
         function generateTimeSlots(selectId) {
-            const select = typeof selectId === 'string' ? document.getElementById(selectId) : selectId;
+            const select = document.getElementById(selectId);
             select.innerHTML = '<option value="" disabled selected>Select Time Slot</option>';
             const now = new Date();
             for (let i = 1; i <= 7; i++) {
@@ -831,56 +606,17 @@
                 });
             }
         }
+        generateTimeSlots('timeSlotInput');
         generateTimeSlots('timeSlotInputOnline');
 
         // Bottom navigation
         document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => showScreen(item.dataset.screen));
+            item.addEventListener('click', () => {
+                const screen = item.dataset.screen;
+                showScreen(screen);
+                if (screen === 'appointmentsScreen') displayAppointments();
+            });
         });
-
-        // FAB
-        document.getElementById('fab').addEventListener('click', () => {
-            const fab = document.getElementById('fab');
-            fab.classList.add('rotate');
-            showScreen('dashboardScreen');
-            setTimeout(() => fab.classList.remove('rotate'), 300);
-        });
-
-        // Offline detection
-        window.addEventListener('online', () => showToast('You are back online!'));
-        window.addEventListener('offline', () => {
-            showToast('You are offline. Some features may be unavailable.');
-            document.getElementById('getLocationBtn').disabled = true;
-        });
-
-        // Voice assistant
-        function startVoiceAssistant() {
-            if (!('webkitSpeechRecognition' in window)) {
-                showToast('Voice assistant not supported');
-                return;
-            }
-            recognition = new webkitSpeechRecognition();
-            recognition.lang = userData.language === 'ml' ? 'ml-IN' : userData.language === 'hi' ? 'hi-IN' : 'en-US';
-            recognition.start();
-            showToast('Listening for commands...');
-            document.getElementById('voiceWaveOnline').classList.add('active');
-            recognition.onresult = (event) => {
-                const command = event.results[0][0].transcript.toLowerCase();
-                if (command.includes('book') || command.includes('appointment')) {
-                    showScreen('onlineScreen');
-                    showToast('Navigated to booking');
-                } else if (command.includes('profile')) {
-                    showScreen('profileScreen');
-                    showToast('Navigated to profile');
-                } else {
-                    showToast('Command not recognized');
-                }
-            };
-            recognition.onend = () => {
-                recognition = null;
-                document.getElementById('voiceWaveOnline').classList.remove('active');
-            };
-        }
 
         // Signup
         document.getElementById('signupBtn').addEventListener('click', () => {
@@ -899,14 +635,11 @@
             }
             userData = { name, birthYear, caseType, language: 'en', fontSize: '14' };
             localStorage.setItem('userData', JSON.stringify(userData));
-            userPoints += 20;
-            localStorage.setItem('userPoints', userPoints);
-            document.getElementById('userPoints').textContent = userPoints;
             updateAvatar();
             updateProfileProgress();
             showScreen('dashboardScreen');
             document.getElementById('welcomeMsg').textContent = `Welcome, ${userData.name}!`;
-            showToast('Signup successful! Earned 20 points.');
+            showToast('Signup successful!');
             logActivity('User signed up');
         });
 
@@ -921,7 +654,6 @@
             document.getElementById('fontSizeSelect').value = userData.fontSize || '14';
             showScreen('profileScreen');
         });
-        document.getElementById('chatBtn').addEventListener('click', () => showScreen('chatScreen'));
 
         // Location selection
         document.getElementById('submitDistrictBtn').addEventListener('click', () => {
@@ -932,143 +664,87 @@
                 return;
             }
             showScreen('lawyerScreen');
-            displayLawyers(district);
+            const noLawyerMsg = document.getElementById('noLawyerMsg');
+            const lawyerInfo = document.getElementById('lawyerInfo');
+            if (district === 'Alappuzha') {
+                noLawyerMsg.classList.add('hidden');
+                lawyerInfo.classList.remove('hidden');
+                document.getElementById('lawyerStatus').textContent = new Date().getHours() < 17 ? 'Available Now' : 'Available Tomorrow';
+            } else {
+                noLawyerMsg.classList.remove('hidden');
+                lawyerInfo.classList.add('hidden');
+            }
             logActivity(`Selected district: ${district}`);
         });
 
-        // Geolocation
+        // Geo-location
         document.getElementById('getLocationBtn').addEventListener('click', () => {
-            if (!navigator.onLine) {
-                showToast('Offline: Cannot access location');
-                document.getElementById('districtInput').value = 'Alappuzha';
-                return;
-            }
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    () => {
-                        document.getElementById('districtInput').value = 'Alappuzha';
-                        showToast('Location detected: Alappuzha');
-                    },
-                    () => {
-                        showToast('Location access denied. Defaulting to Alappuzha.');
-                        document.getElementById('districtInput').value = 'Alappuzha';
-                    }
-                );
+                navigator.geolocation.getCurrentPosition(() => {
+                    document.getElementById('districtInput').value = 'Alappuzha';
+                    showToast('Location detected: Alappuzha');
+                }, () => showToast('Location access denied'));
             } else {
-                showToast('Geolocation not supported. Defaulting to Alappuzha.');
-                document.getElementById('districtInput').value = 'Alappuzha';
+                showToast('Geolocation not supported');
             }
         });
 
-        // Display lawyers
-        function displayLawyers(district) {
-            const lawyerList = document.getElementById('lawyerList');
-            const noLawyerMsg = document.getElementById('noLawyerMsg');
-            const availableLawyers = lawyers.filter(l => l.district === district);
-            lawyerList.innerHTML = '';
-            if (availableLawyers.length === 0) {
-                noLawyerMsg.classList.remove('hidden');
-                return;
-            }
-            noLawyerMsg.classList.add('hidden');
-            availableLawyers.forEach(lawyer => {
-                const div = document.createElement('div');
-                div.className = 'card mb-3';
-                div.innerHTML = `
-                    <p class="text-xs"><strong>Name:</strong> ${lawyer.name}</p>
-                    <p class="text-xs"><strong>Location:</strong> ${lawyer.location}</p>
-                    <p class="text-xs"><strong>Status:</strong> <span>${new Date().getHours() < 17 ? 'Available Now' : 'Available Tomorrow'}</span></p>
-                    <p class="text-xs"><strong>Rating:</strong> ${lawyer.rating} (${lawyer.reviews} reviews)</p>
-                    <select class="timeSlotInput mt-2" aria-label="Select Time Slot">
-                        <option value="" disabled selected>Select Time Slot</option>
-                    </select>
-                    <textarea class="notesInput h-20 text-xs mt-2" placeholder="Add Notes (Optional)" aria-label="Notes"></textarea>
-                    <div class="voice-wave" id="voiceWave_${lawyer.name}"></div>
-                    <button class="voiceNotesBtn btn w-full mb-2 mt-2">Add Notes via Voice</button>
-                    <label class="flex items-center mb-2 text-xs">
-                        <input type="checkbox" class="priorityInput mr-2"> High Priority
-                    </label>
-                    <input type="file" class="attachmentInput" accept="image/*,application/pdf" aria-label="Attachment">
-                    <button class="bookBtn btn w-full mt-2" disabled>Book Appointment</button>
-                `;
-                lawyerList.appendChild(div);
-                const timeSlotSelect = div.querySelector('.timeSlotInput');
-                generateTimeSlots(timeSlotSelect);
-                const bookBtn = div.querySelector('.bookBtn');
-                const inputs = [timeSlotSelect];
-                inputs.forEach(input => input.addEventListener('input', () => validateInputs(inputs, bookBtn)));
-                bookBtn.addEventListener('click', () => bookLawyer(lawyer, div));
-                div.querySelector('.voiceNotesBtn').addEventListener('click', () => startVoiceRecognition(div.querySelector('.notesInput'), `voiceWave_${lawyer.name}`));
-            });
-        }
+        // Lawyer profile
+        document.getElementById('viewLawyerProfile').addEventListener('click', () => showScreen('lawyerProfileScreen'));
 
-        // Book lawyer
+        // Book nearby appointment
         let currentAppointment;
-        function bookLawyer(lawyer, div) {
-            const timeSlot = div.querySelector('.timeSlotInput').value;
-            const notes = escapeHTML(div.querySelector('.notesInput').value);
-            const priority = div.querySelector('.priorityInput').checked;
-            const attachment = div.querySelector('.attachmentInput').files[0];
+        document.getElementById('bookBtn').addEventListener('click', () => {
+            const timeSlot = document.getElementById('timeSlotInput').value;
+            const notes = escapingHTML(document.getElementById('notesInput').value);
+            const priority = document.getElementById('priorityInput').checked;
+            const attachment = document.getElementById('attachmentInput').files[0];
             if (!timeSlot) {
                 showToast('Please select a time slot');
-                div.querySelector('.timeSlotInput').classList.add('error');
+                document.getElementById('timeSlotInput').classList.add('error');
                 return;
             }
-            if (attachment && !validateAttachment(attachment)) return;
-            showModal(`Confirm booking with ${lawyer.name}?`, () => {
-                const bookBtn = div.querySelector('.bookBtn');
-                bookBtn.disabled = true;
+            showModal('Confirm booking?', () => {
                 const reader = new FileReader();
                 reader.onload = () => {
-                    const appointment = {
+                    currentAppointment = {
                         id: Date.now(),
-                        lawyer: lawyer.name,
-                        location: lawyer.location,
+                        lawyer: 'Gayathri',
+                        location: 'Alappuzha District Court',
                         caseType: userData.caseType,
                         dateTime: timeSlot,
                         status: 'Confirmed',
                         notes,
                         tags: priority ? ['Urgent', 'Priority'] : ['Urgent'],
-                        attachment: reader.result || null,
-                        reminder: false,
-                        blockchainHash: generateBlockchainHash()
+                        attachment: reader.result || null
                     };
-                    if (saveAppointment(appointment)) {
-                        generatePDF(appointment);
+                    if (saveAppointment(currentAppointment)) {
+                        generatePDF(currentAppointment);
                         showScreen('confirmationScreen');
                         loadHandshakeAnimation();
-                        document.getElementById('blockchainHash').textContent = appointment.blockchainHash;
-                        showToast('Appointment booked! Earned 15 points.');
-                        userPoints += 15;
-                        localStorage.setItem('userPoints', userPoints);
-                        document.getElementById('userPoints').textContent = userPoints;
-                        logActivity(`Booked appointment with ${lawyer.name}`);
+                        showToast('Appointment booked!');
+                        logActivity('Booked nearby appointment');
                         updateRecentAppointments();
-                        document.getElementById('reminderInput').checked = false;
                     }
-                    bookBtn.disabled = false;
                 };
                 if (attachment) reader.readAsDataURL(attachment);
                 else reader.onload();
             });
-        }
+        });
 
         // Book online appointment
         document.getElementById('bookOnlineBtn').addEventListener('click', () => {
             const caseType = document.getElementById('onlineCaseType').value;
             const conferenceMethod = document.getElementById('conferenceMethod').value;
             const timeSlot = document.getElementById('timeSlotInputOnline').value;
-            const notes = escapeHTML(document.getElementById('notesInputOnline').value);
+            const notes = escapingHTML(document.getElementById('notesInputOnline').value);
             const recurring = document.getElementById('recurringInput').checked;
             const attachment = document.getElementById('attachmentInputOnline').files[0];
             if (!caseType || !conferenceMethod || !timeSlot) {
                 showToast('Please fill all required fields');
                 return;
             }
-            if (attachment && !validateAttachment(attachment)) return;
             showModal('Confirm booking?', () => {
-                const bookBtn = document.getElementById('bookOnlineBtn');
-                bookBtn.disabled = true;
                 const reader = new FileReader();
                 reader.onload = () => {
                     currentAppointment = {
@@ -1081,54 +757,21 @@
                         status: 'Confirmed',
                         notes,
                         tags: recurring ? ['Online', 'Recurring'] : ['Online'],
-                        attachment: reader.result || null,
-                        reminder: false,
-                        blockchainHash: generateBlockchainHash()
+                        attachment: reader.result || null
                     };
                     if (saveAppointment(currentAppointment)) {
                         generatePDF(currentAppointment);
                         showScreen('confirmationScreen');
                         loadHandshakeAnimation();
-                        document.getElementById('blockchainHash').textContent = currentAppointment.blockchainHash;
-                        showToast('Appointment booked! Earned 15 points.');
-                        userPoints += 15;
-                        localStorage.setItem('userPoints', userPoints);
-                        document.getElementById('userPoints').textContent = userPoints;
+                        showToast('Appointment booked!');
                         logActivity('Booked online appointment');
                         updateRecentAppointments();
-                        document.getElementById('reminderInput').checked = false;
                     }
-                    bookBtn.disabled = false;
                 };
                 if (attachment) reader.readAsDataURL(attachment);
                 else reader.onload();
             });
         });
-
-        // Voice input
-        function startVoiceRecognition(textarea, waveId) {
-            if (!('webkitSpeechRecognition' in window)) {
-                showToast('Voice recognition not supported');
-                return;
-            }
-            recognition = new webkitSpeechRecognition();
-            recognition.lang = userData.language === 'ml' ? 'ml-IN' : userData.language === 'hi' ? 'hi-IN' : 'en-US';
-            recognition.start();
-            showToast('Listening...');
-            document.getElementById(waveId || 'voiceWaveOnline').classList.add('active');
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                textarea.value += transcript;
-                showToast('Voice input added');
-            };
-            recognition.onerror = () => showToast('Voice recognition error');
-            recognition.onend = () => {
-                recognition = null;
-                document.getElementById(waveId || 'voiceWaveOnline').classList.remove('active');
-            };
-        }
-        document.getElementById('voiceNotesOnline').addEventListener('click', () => startVoiceRecognition(document.getElementById('notesInputOnline'), 'voiceWaveOnline'));
-        document.getElementById('voiceChatBtn').addEventListener('click', () => startVoiceRecognition(document.getElementById('chatInput'), 'voiceWaveOnline'));
 
         // Save profile
         document.getElementById('saveProfileBtn').addEventListener('click', () => {
@@ -1157,21 +800,10 @@
             logActivity('Updated profile');
         });
 
-        // Export profile
-        document.getElementById('exportProfileBtn').addEventListener('click', () => {
-            const blob = new Blob([JSON.stringify(userData, null, 2)], { type: 'application/json' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'profile.json';
-            link.click();
-            showToast('Profile exported!');
-            logActivity('Exported profile');
-        });
-
         // Profile picture upload
         document.getElementById('profilePicInput').addEventListener('change', (e) => {
             const file = e.target.files[0];
-            if (file && file.size <= 5 * 1024 * 1024 && file.type.startsWith('image/')) {
+            if (file) {
                 const reader = new FileReader();
                 reader.onload = () => {
                     userData.profilePic = reader.result;
@@ -1180,23 +812,8 @@
                     updateProfileProgress();
                 };
                 reader.readAsDataURL(file);
-            } else {
-                showToast('Invalid image (max 5MB, image only)');
             }
         });
-
-        // Attachment validation
-        function validateAttachment(file) {
-            if (file.size > 5 * 1024 * 1024) {
-                showToast('File too large (max 5MB)');
-                return false;
-            }
-            if (!file.type.match(/image\/.*|application\/pdf/)) {
-                showToast('Only images or PDFs allowed');
-                return false;
-            }
-            return true;
-        }
 
         // Save appointment
         function saveAppointment(appointment) {
@@ -1211,66 +828,36 @@
         }
 
         // Display appointments
-        let isTimelineView = false;
         function displayAppointments() {
             const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
             const filter = document.getElementById('filterAppointments').value;
-            const search = escapeHTML(document.getElementById('searchAppointments').value.toLowerCase());
+            const search = document.getElementById('searchAppointments').value.toLowerCase();
             let filtered = appointments.filter(apt => filter === 'All' || apt.status === filter);
-            filtered = filtered.filter(apt =>
-                apt.caseType.toLowerCase().includes(search) ||
+            filtered = filtered.filter(apt => 
+                apt.caseType.toLowerCase().includes(search) || 
                 new Date(apt.dateTime).toLocaleString().toLowerCase().includes(search)
             );
             filtered.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
             const list = document.getElementById('appointmentsList');
             list.innerHTML = '';
-            if (isTimelineView) {
-                filtered.forEach(apt => {
-                    const div = document.createElement('div');
-                    div.className = 'timeline-card mb-4';
-                    div.innerHTML = `
-                        <p class="text-xs"><strong>Lawyer:</strong> ${apt.lawyer}</p>
-                        <p class="text-xs"><strong>Location:</strong> ${apt.location}</p>
-                        <p class="text-xs"><strong>Case Type:</strong> ${apt.caseType}</p>
-                        <p class="text-xs"><strong>Date:</strong> ${new Date(apt.dateTime).toLocaleString()}</p>
-                        ${apt.conferenceMethod ? `<p class="text-xs"><strong>Method:</strong> ${apt.conferenceMethod}</p>` : ''}
-                        ${apt.notes ? `<p class="text-xs"><strong>Notes:</strong> ${apt.notes}</p>` : ''}
-                        <p class="text-xs"><strong>Status:</strong> ${apt.status}</p>
-                        <p class="text-xs"><strong>Reminder:</strong> ${apt.reminder ? 'Set' : 'Not Set'}</p>
-                        <div class="flex flex-wrap gap-2 mt-2">
-                            ${apt.status === 'Confirmed' ? `<button class="btn text-xs" onclick="cancelAppointment(${apt.id})">Cancel</button>` : ''}
-                            ${apt.status === 'Completed' && !apt.rating ? `<button class="btn text-xs" onclick="rateAppointment(${apt.id})">Rate Lawyer</button>` : ''}
-                        </div>
-                    `;
-                    list.appendChild(div);
-                });
-            } else {
-                filtered.forEach(apt => {
-                    const div = document.createElement('div');
-                    div.className = 'p-3 border rounded mb-3 card';
-                    div.innerHTML = `
-                        <p class="text-xs"><strong>Lawyer:</strong> ${apt.lawyer}</p>
-                        <p class="text-xs"><strong>Location:</strong> ${apt.location}</p>
-                        <p class="text-xs"><strong>Case Type:</strong> ${apt.caseType}</p>
-                        <p class="text-xs"><strong>Date:</strong> ${new Date(apt.dateTime).toLocaleString()}</p>
-                        ${apt.conferenceMethod ? `<p class="text-xs"><strong>Method:</strong> ${apt.conferenceMethod}</p>` : ''}
-                        ${apt.notes ? `<p class="text-xs"><strong>Notes:</strong> ${apt.notes}</p>` : ''}
-                        <p class="text-xs"><strong>Status:</strong> ${apt.status}</p>
-                        <p class="text-xs"><strong>Reminder:</strong> ${apt.reminder ? 'Set' : 'Not Set'}</p>
-                        <div class="flex flex-wrap gap-2 mt-2">
-                            ${apt.status === 'Confirmed' ? `<button class="btn text-xs" onclick="cancelAppointment(${apt.id})">Cancel</button>` : ''}
-                            ${apt.status === 'Completed' && !apt.rating ? `<button class="btn text-xs" onclick="rateAppointment(${apt.id})">Rate Lawyer</button>` : ''}
-                        </div>
-                    `;
-                    list.appendChild(div);
-                });
-            }
+            filtered.forEach(apt => {
+                const div = document.createElement('div');
+                div.className = 'p-2 border rounded mb-2 card';
+                div.innerHTML = `
+                    <p class="text-xs"><strong>Lawyer:</strong> ${apt.lawyer}</p>
+                    <p class="text-xs"><strong>Location:</strong> ${apt.location}</p>
+                    <p class="text-xs"><strong>Case Type:</strong> ${apt.caseType}</p>
+                    <p class="text-xs"><strong>Date:</strong> ${new Date(apt.dateTime).toLocaleString()}</p>
+                    ${apt.conferenceMethod ? `<p class="text-xs"><strong>Method:</strong> ${apt.conferenceMethod}</p>` : ''}
+                    ${apt.notes ? `<p class="text-xs"><strong>Notes:</strong> ${apt.notes}</p>` : ''}
+                    <p class="text-xs"><strong>Status:</strong> ${apt.status}</p>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <button class="btn text-xs" onclick="cancelAppointment(${apt.id})">Cancel</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
         }
-        document.getElementById('timelineViewBtn').addEventListener('click', () => {
-            isTimelineView = !isTimelineView;
-            document.getElementById('timelineViewBtn').textContent = isTimelineView ? 'List View' : 'Timeline View';
-            displayAppointments();
-        });
 
         // Cancel appointment
         window.cancelAppointment = function(id) {
@@ -1284,43 +871,6 @@
                 updateRecentAppointments();
             });
         };
-
-        // Rate appointment
-        window.rateAppointment = function(id) {
-            showModal('Rate this lawyer (1-5 stars):', () => {
-                const rating = prompt('Enter rating (1-5):');
-                if (rating >= 1 && rating <= 5) {
-                    const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-                    const updated = appointments.map(apt => apt.id === id ? { ...apt, rating } : apt);
-                    localStorage.setItem('appointments', JSON.stringify(updated));
-                    displayAppointments();
-                    showToast(`Rated ${rating} stars. Earned 5 points.`);
-                    userPoints += 5;
-                    localStorage.setItem('userPoints', userPoints);
-                    document.getElementById('userPoints').textContent = userPoints;
-                    logActivity(`Rated appointment ${id} with ${rating} stars`);
-                } else {
-                    showToast('Invalid rating');
-                }
-            });
-        };
-
-        // Set reminder
-        document.getElementById('reminderInput').addEventListener('change', (e) => {
-            if (currentAppointment) {
-                currentAppointment.reminder = e.target.checked;
-                const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-                const updated = appointments.map(apt => apt.id === currentAppointment.id ? currentAppointment : apt);
-                localStorage.setItem('appointments', JSON.stringify(updated));
-                showToast(e.target.checked ? 'Reminder set for 24h before' : 'Reminder removed');
-                logActivity(e.target.checked ? 'Set reminder' : 'Removed reminder');
-            }
-        });
-
-        // Blockchain hash (mock)
-        function generateBlockchainHash() {
-            return '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-        }
 
         // Generate PDF
         function generatePDF(appointment) {
@@ -1348,12 +898,10 @@
                 doc.text(doc.splitTextToSize(appointment.notes, 170), 15, yOffset + 5);
                 yOffset += 10;
             }
-            doc.text(`Blockchain Hash: ${appointment.blockchainHash}`, 15, yOffset + 5);
             doc.setFontSize(8);
             doc.text('Generated on May 23, 2025', 15, 280);
-            appointment.pdfData = doc.output('datauristring');
+            currentAppointment.pdfData = doc.output('datauristring');
             doc.save(`Appointment_${appointment.id}.pdf`);
-            currentAppointment = appointment;
         }
 
         // PDF preview
@@ -1362,7 +910,7 @@
             const preview = document.getElementById('pdfPreview');
             preview.innerHTML = '';
             const pdfContent = document.createElement('div');
-            pdfContent.style.cssText = 'padding: 10px; background: white; color: black; font-family: Helvetica, sans-serif; font-size: 10px; max-width: 100%;';
+            pdfContent.style.cssText = 'padding: 10px; background: white; color: black; font-family: Helvetica, sans-serif; font-size: 10px;';
             pdfContent.innerHTML = `
                 <img src="s1.png" style="width: 20px; height: 20px;">
                 <h1 style="font-size: 12px; margin: 5px 0;">Legal Connect</h1>
@@ -1374,13 +922,11 @@
                 <p><strong>Date & Time:</strong> ${new Date(currentAppointment.dateTime).toLocaleString()}</p>
                 ${currentAppointment.conferenceMethod ? `<p><strong>Conference Method:</strong> ${currentAppointment.conferenceMethod}</p>` : ''}
                 ${currentAppointment.notes ? `<p><strong>Notes:</strong> ${currentAppointment.notes}</p>` : ''}
-                <p><strong>Blockchain Hash:</strong> ${currentAppointment.blockchainHash}</p>
-                <p style="font-size: 8px;">Generated on May 23, 2025</p>
+                <p style="font-size: 8px; position: absolute; bottom: 0;">Generated on May 23, 2025</p>
             `;
             preview.appendChild(pdfContent);
-            html2canvas(pdfContent, { scale: 2, width: pdfContent.offsetWidth }).then(canvas => {
+            html2canvas(pdfContent, { scale: 2 }).then(canvas => {
                 preview.innerHTML = '';
-                canvas.style.width = '100%';
                 preview.appendChild(canvas);
             });
         });
@@ -1392,10 +938,6 @@
         });
         document.getElementById('backPDFBtn').addEventListener('click', () => showScreen('confirmationScreen'));
 
-        // AR preview
-        document.getElementById('arPreviewBtn').addEventListener('click', () => showScreen('arPreviewScreen'));
-        document.getElementById('backARBtn').addEventListener('click', () => showScreen('confirmationScreen'));
-
         // Recent appointments
         function updateRecentAppointments() {
             const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
@@ -1404,7 +946,7 @@
             list.innerHTML = '';
             recent.forEach(apt => {
                 const div = document.createElement('div');
-                div.className = 'p-2 border-b';
+                div.className = 'p-1 border-b';
                 div.innerHTML = `
                     <p class="text-xs"><strong>${apt.lawyer}</strong> - ${apt.caseType}</p>
                     <p class="text-xs">${new Date(apt.dateTime).toLocaleString()}</p>
@@ -1416,197 +958,53 @@
         // Export appointments as CSV
         document.getElementById('exportAppointmentsBtn').addEventListener('click', () => {
             const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-            const csv = ['ID,Lawyer,Location,Case Type,Date,Method,Notes,Status,Reminder,Blockchain Hash'];
+            const csv = ['ID,Lawyer,Location,Case Type,Date,Method,Notes,Status'];
             appointments.forEach(apt => {
-                csv.push(`${apt.id},${apt.lawyer},${apt.location},${apt.caseType},${new Date(apt.dateTime).toLocaleString()},${apt.conferenceMethod || ''},${apt.notes || ''},${apt.status},${apt.reminder},${apt.blockchainHash}`);
+                csv.push(`${apt.id},${apt.lawyer},${apt.location},${apt.caseType},${new Date(apt.dateTime).toLocaleString()},${apt.conferenceMethod || ''},${apt.notes || ''},${apt.status}`);
             });
             const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = 'Appointments.csv';
             link.click();
-            showToast('Appointments exported!');
             logActivity('Exported appointments as CSV');
         });
 
-        // Chat functionality
-        function renderChat() {
-            const chatMessages = document.getElementById('chatMessages');
-            chatMessages.innerHTML = '';
-            if (chatHistory.length > 50) {
-                chatHistory = chatHistory.slice(-50);
-                localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-            }
-            chatHistory.forEach(msg => {
-                const div = document.createElement('div');
-                div.className = `p-3 rounded-lg chat-message ${msg.type === 'user' ? 'bg-primary text-white ml-auto' : 'bg-gray-100 dark:bg-gray-700'} max-w-[80%]`;
-                const formattedText = msg.text
-                    .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
-                    .replace(/_(.*?)_/g, '<em>$1</em>');
-                div.innerHTML = `
-                    <p class="text-xs">${formattedText}</p>
-                    ${msg.attachment ? `<img src="${msg.attachment}" class="max-w-full h-auto mt-2 rounded" alt="Attachment">` : ''}
-                    <p class="text-xs opacity-70 mt-1">${new Date(msg.timestamp).toLocaleTimeString()}</p>
-                `;
-                chatMessages.appendChild(div);
-            });
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+        // Navigation
+        document.getElementById('viewAppointmentsBtn').addEventListener('click', () => {
+            showScreen('appointmentsScreen');
+            displayAppointments();
+        });
+
+        // Floating action button
+        document.getElementById('fab').addEventListener('click', () => showScreen('dashboardScreen'));
+
+        // Search and filter appointments
+        document.getElementById('searchAppointments').addEventListener('input', displayAppointments);
+        document.getElementById('filterAppointments').addEventListener('change', displayAppointments);
+
+        // Activity logging
+        function logActivity(action) {
+            const logs = JSON.parse(localStorage.getItem('activityLogs')) || [];
+            logs.push({ action, timestamp: new Date().toISOString() });
+            if (logs.length > 50) logs.shift();
+            localStorage.setItem('activityLogs', JSON.stringify(logs));
         }
-        document.getElementById('chatInput').addEventListener('input', () => {
-            document.getElementById('sendChatBtn').disabled = !document.getElementById('chatInput').value.trim();
-        });
-        document.getElementById('sendChatBtn').addEventListener('click', () => {
-            const now = Date.now();
-            if (now - lastChatTime < 3000) {
-                showToast('Please wait before sending another message');
-                return;
-            }
-            const input = document.getElementById('chatInput');
-            const message = escapeHTML(input.value.trim());
-            const attachment = document.getElementById('chatAttachment').files[0];
-            if (!message && !attachment) return;
-            if (attachment && !validateAttachment(attachment)) return;
-            lastChatTime = now;
-        if (attachment && !validateAttachment(attachment)) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-            const chatMessage = {
-                type: 'user',
-                text: message,
-                timestamp: now,
-                attachment: reader.result || null,
-                translated: userData.language !== 'en' ? `Translated to ${userData.language}` : null
-            };
-            chatHistory.push(chatMessage);
-            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-            renderChat();
-            input.value = '';
-            document.getElementById('chatAttachment').value = '';
-            document.getElementById('sendChatBtn').disabled = true;
-            showToast('Your message has been forwarded to our support team.');
-            
-            // Simulate bot response
-            setTimeout(() => {
-                const botMessage = {
-                    type: 'bot',
-                    text: 'Thank you for your message. Our support team will respond within 24 hours.',
-                    timestamp: Date.now(),
-                    attachment: null
-                };
-                chatHistory.push(botMessage);
-                localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-                renderChat();
-                showToast('Support team: Response received.');
-            }, 2000);
 
-            logActivity('Sent chat message');
-        };
-        if (attachment) reader.readAsDataURL(attachment);
-        else reader.onload();
-    });
-
-    // Chat attachment handling
-    document.getElementById('chatAttachment').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file && validateAttachment(file)) {
-            showToast('Attachment ready to send');
-        } else {
-            e.target.value = '';
+        // HTML escaping
+        function escapingHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
         }
-    });
 
-    // Input validation for signup
-    const signupInputs = [document.getElementById('nameInput'), document.getElementById('birthYearInput'), document.getElementById('caseTypeInput')];
-    signupInputs.forEach(input => input.addEventListener('input', () => validateInputs(signupInputs, document.getElementById('signupBtn'))));
-
-    // Input validation for online booking
-    const onlineInputs = [document.getElementById('onlineCaseType'), document.getElementById('conferenceMethod'), document.getElementById('timeSlotInputOnline')];
-    onlineInputs.forEach(input => input.addEventListener('input', () => validateInputs(onlineInputs, document.getElementById('bookOnlineBtn'))));
-
-    // Search and filter appointments
-    document.getElementById('searchAppointments').addEventListener('input', () => displayAppointments());
-    document.getElementById('filterAppointments').addEventListener('change', () => displayAppointments());
-
-    // View appointments from confirmation
-    document.getElementById('viewAppointmentsBtn').addEventListener('click', () => showScreen('appointmentsScreen'));
-
-    // Clear storage
-    function clearStorage() {
-        showModal('Clear all data?', () => {
-            localStorage.clear();
-            userData = null;
-            chatHistory = [];
-            userPoints = 0;
-            showScreen('signupScreen');
-            showToast('Data cleared');
-            logActivity('Cleared all data');
-        });
-    }
-
-    // Logout
-    function logout() {
-        showModal('Log out?', () => {
-            userData = null;
-            localStorage.removeItem('userData');
-            showScreen('signupScreen');
-            showToast('Logged out');
-            logActivity('Logged out');
-        });
-    }
-
-    // Activity logging (mock)
-    function logActivity(activity) {
-        const activities = JSON.parse(localStorage.getItem('activities')) || [];
-        activities.push({ activity, timestamp: new Date().toISOString() });
-        if (activities.length > 100) activities.shift();
-        localStorage.setItem('activities', JSON.stringify(activities));
-    }
-
-    // HTML escape
-    function escapeHTML(str) {
-        return str.replace(/[&<>"']/g, m => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&apos;'
-        }[m]));
-    }
-
-    // Smart notifications (mock)
-    function checkSmartNotifications() {
-        const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-        appointments.forEach(apt => {
-            const timeDiff = new Date(apt.dateTime) - new Date();
-            if (timeDiff > 0 && timeDiff < 24 * 60 * 60 * 1000 && !apt.reminder) {
-                showToast(`Reminder: Appointment with ${apt.lawyer} in ${Math.floor(timeDiff / (60 * 60 * 1000))} hours`);
-                apt.reminder = true;
-                localStorage.setItem('appointments', JSON.stringify(appointments));
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            updateRecentAppointments();
+            if (userData) {
+                showScreen(localStorage.getItem('lastScreen') || 'dashboardScreen');
             }
         });
-    }
-    setInterval(checkSmartNotifications, 60 * 60 * 1000); // Check hourly
-
-    // Initialize font size
-    if (userData && userData.fontSize) {
-        document.body.style.fontSize = `${userData.fontSize}px`;
-    }
-
-    // Initialize voice assistant on FAB long press
-    let fabTimeout;
-    document.getElementById('fab').addEventListener('mousedown', () => {
-        fabTimeout = setTimeout(startVoiceAssistant, 1000);
-    });
-    document.getElementById('fab').addEventListener('mouseup', () => clearTimeout(fabTimeout));
-    document.getElementById('fab').addEventListener('touchstart', () => {
-        fabTimeout = setTimeout(startVoiceAssistant, 1000);
-    });
-    document.getElementById('fab').addEventListener('touchend', () => clearTimeout(fabTimeout));
-
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-        if (recognition) recognition.stop();
-    });
     </script>
 </body>
 </html>
