@@ -3,1008 +3,729 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Legal Connect by Right Solutions A.I.</title>
-    <link rel="icon" href="s1.png">
+    <title>Legal Connect</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/Anasdavoodtk/Right-solutions-A.I/main/s1.png" onerror="this.onerror=null;this.src='https://placehold.co/32x32/0f172a/ffffff?text=LC';">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1976d2;
-            --secondary: #42a5f5;
-            --background: #f5f5f5;
-            --card-bg: #ffffff;
-            --text: #212121;
-            --accent: #0288d1;
+            --primary: #0f172a; /* Navy Blue */
+            --primary-light: #1e293b;
+            --accent: #f59e0b;  /* Amber */
+            --background: #f1f5f9; /* Light Gray */
+            --card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border: #e2e8f0;
+            --success: #16a34a;
         }
-        .dark {
-            --background: #212121;
-            --card-bg: #424242;
-            --text: #e0e0e0;
+        html.dark {
+            --background: #020617;
+            --card: #0f172a;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --border: #1e293b;
         }
         body {
-            font-family: 'Roboto', sans-serif;
-            background: var(--background);
-            color: var(--text);
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary) #e0e0e0;
-            font-size: 14px;
-            overscroll-behavior: none;
+            font-family: 'Lato', sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.3s, color 0.3s;
         }
-        .container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            max-width: 100%;
-            overflow: hidden;
-        }
-        .content {
-            flex: 1;
-            padding: 0.5rem;
-            overflow-y: auto;
-            padding-bottom: 4rem; /* Space for bottom nav */
-        }
+        .font-heading { font-family: 'Poppins', sans-serif; }
         .screen { display: none; }
-        .screen.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        .screen.active { display: block; animation: screenFadeIn 0.4s ease-out; }
+        @keyframes screenFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .card {
-            background: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            padding: 1rem;
-            margin-bottom: 0.5rem;
-            transition: transform 0.2s;
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 1rem; /* 16px */
+            box-shadow: 0 4px 12px -1px rgb(0 0 0 / 0.05), 0 2px 8px -2px rgb(0 0 0 / 0.05);
+            transition: background-color 0.3s, border-color 0.3s;
         }
-        .card:hover { transform: translateY(-2px); }
-        .btn {
-            background: var(--primary);
+        .btn-primary {
+            background-image: linear-gradient(to right, var(--primary), var(--primary-light));
             color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            transition: background 0.3s, transform 0.2s;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            text-align: center;
-            font-size: 0.875rem;
+            border-radius: 0.75rem; /* 12px */
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 4px 20px -5px rgb(15 23 42 / 0.4);
+            border: none;
         }
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s;
-        }
-        .btn:hover::after {
-            width: 200px;
-            height: 200px;
-        }
-        .btn:hover {
-            background: var(--secondary);
-            transform: scale(1.05);
-        }
-        .btn:disabled {
-            background: #bdbdbd;
-            cursor: not-allowed;
-        }
-        input, select, textarea {
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            padding: 0.5rem;
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 7px 25px -5px rgb(15 23 42 / 0.5); }
+        .btn-primary:disabled { background-image: none; background-color: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
+        
+        input, select {
+            background-color: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
             width: 100%;
-            margin-bottom: 0.5rem;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            font-size: 0.875rem;
+            transition: all 0.3s;
         }
-        .dark input, .dark select, .dark textarea {
-            background: #616161;
-            border-color: #757575;
-            color: var(--text);
-        }
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+        input:focus, select:focus {
             outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgb(245 158 11 / 0.2);
         }
-        input.error, select.error {
-            border-color: #d32f2f;
-            animation: shake 0.3s;
-        }
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--card-bg);
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-around;
-            padding: 0.5rem 0;
-            z-index: 10;
-        }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--text);
-            font-size: 0.75rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            transition: color 0.2s;
-        }
-        .nav-item.active, .nav-item:hover {
-            color: var(--primary);
-        }
-        .nav-item img {
-            width: 20px;
-            height: 20px;
-            margin-bottom: 0.25rem;
-        }
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-        .modal.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .modal-content {
-            background: var(--card-bg);
-            border-radius: 8px;
-            padding: 1rem;
-            max-width: 90%;
-            width: 300px;
-            animation: slideIn 0.3s;
-        }
-        .toast {
-            position: fixed;
-            bottom: 4.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #4caf50;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 20;
-            font-size: 0.75rem;
-            max-width: 90%;
-            text-align: center;
-        }
-        .toast.show { opacity: 1; }
-        .progress-bar {
-            height: 3px;
-            background: var(--primary);
-            transition: width 0.3s;
-        }
-        .progress-circle {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #e0e0e0;
-            border-top: 2px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        .dark .progress-circle {
-            border-color: #616161;
-            border-top-color: var(--primary);
-        }
+
+        /* FAB */
+        .fab-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 50; }
         .fab {
-            position: fixed;
-            bottom: 5rem;
-            right: 0.5rem;
-            background: var(--primary);
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            font-size: 1.25rem;
+            width: 3.5rem; height: 3.5rem; border-radius: 50%;
+            background-color: var(--primary); color: white;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px -5px rgb(15 23 42 / 0.4);
+            cursor: pointer; transition: transform 0.3s ease;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .fab.active { transform: rotate(45deg); }
+        .fab-options {
+            position: absolute; bottom: 4.5rem; right: 0;
+            display: flex; flex-direction: column; gap: 1rem;
+            opacity: 0; transform: translateY(10px);
+            pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease;
         }
-        @keyframes slideIn {
-            from { transform: translateY(-20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        .fab-options.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .fab-option {
+            display: flex; align-items: center; gap: 0.75rem;
+            background-color: var(--card); padding: 0.5rem 1rem;
+            border-radius: 1.5rem; box-shadow: 0 4px 15px -5px rgb(0 0 0 / 0.1);
+            cursor: pointer; font-size: 0.875rem; font-weight: 500; white-space: nowrap;
         }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-4px); }
-            75% { transform: translateX(4px); }
+        
+        /* Profile Tabs */
+        .profile-tab {
+            padding: 0.5rem 1rem; cursor: pointer; border-bottom: 2px solid transparent;
+            font-weight: 500; color: var(--text-secondary);
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .profile-tab.active { color: var(--text-primary); border-bottom-color: var(--accent); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: screenFadeIn 0.3s; }
+
+        /* Calendar */
+        #calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; }
+        .calendar-day {
+            text-align: center; padding: 0.5rem; border-radius: 50%; cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
         }
-        @media (min-width: 640px) {
-            .container { max-width: 640px; margin: 0 auto; }
+        .calendar-day.other-month { color: var(--text-secondary); opacity: 0.5; }
+        .calendar-day:not(.other-month):hover { background-color: #e2e8f0; }
+        .calendar-day.selected { background-color: var(--primary); color: white; font-weight: bold; }
+        
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 34px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(14px); }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
         }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content {
+            background-color: var(--card);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 400px;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
     </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Content -->
-        <div class="content">
-            <!-- Loading Screen -->
-            <div id="loadingScreen" class="screen flex items-center justify-center h-full">
-                <div class="progress-circle"></div>
+<body class="text-text-primary">
+
+    <div id="app" class="max-w-lg mx-auto bg-background min-h-screen flex flex-col">
+        
+        <header id="app-header" class="p-4 flex items-center justify-between sticky top-0 bg-background/80 backdrop-blur-sm z-40">
+            <h1 id="header-title" class="font-heading text-xl font-bold"></h1>
+            <div id="header-actions"></div>
+        </header>
+
+        <main class="p-4 pb-32 flex-grow">
+            <!-- ===== SCREENS ===== -->
+
+            <div id="splashScreen" class="screen">
+                <div class="text-center pt-16">
+                    <div class="w-24 h-24 bg-primary rounded-3xl mx-auto flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    </div>
+                    <h1 class="font-heading text-3xl font-bold">Legal Connect</h1>
+                    <p class="text-text-secondary mt-2">Your Professional Legal Partner</p>
+                    <div class="mt-12">
+                        <input id="nameInput" type="text" placeholder="Enter your full name" class="text-center">
+                        <button id="loginBtn" class="btn-primary w-full mt-4">Get Started</button>
+                    </div>
+                </div>
             </div>
 
-            <!-- Signup Screen -->
-            <div id="signupScreen" class="screen card">
-                <h2 class="text-base font-bold mb-3">Sign Up</h2>
-                <div class="progress-bar" style="width: 33%"></div>
-                <input id="nameInput" type="text" placeholder="Full Name" aria-label="Full Name">
-                <input id="birthYearInput" type="number" placeholder="Birth Year" aria-label="Birth Year">
-                <select id="caseTypeInput" aria-label="Case Type">
-                    <option value="" disabled selected>Select Case Type</option>
-                    <option value="Civil">Civil</option>
-                    <option value="Criminal">Criminal</option>
-                    <option value="Family">Family</option>
-                    <option value="Corporate">Corporate</option>
-                </select>
-                <button id="signupBtn" class="btn w-full" disabled>Sign Up</button>
-            </div>
-
-            <!-- Dashboard Screen -->
             <div id="dashboardScreen" class="screen">
-                <h2 class="text-base font-bold mb-3">Dashboard</h2>
-                <div class="card">
-                    <div class="flex items-center">
-                        <div id="userAvatar" class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center text-lg mr-3"></div>
+                <div id="upcoming-appointment-card" class="card p-4 mb-6 hidden">
+                    <p class="font-heading text-sm font-semibold text-accent mb-1">UPCOMING APPOINTMENT</p>
+                    <div class="flex items-center justify-between">
                         <div>
-                            <p id="welcomeMsg" class="text-xs"></p>
-                            <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-                                <div id="profileProgress" class="bg-primary h-2 rounded-full" style="width: 0%"></div>
-                            </div>
-                            <p class="text-xs">Profile Completeness</p>
+                            <h3 id="upcoming-lawyer" class="font-heading font-bold text-lg"></h3>
+                            <p id="upcoming-datetime" class="text-sm text-text-secondary"></p>
+                        </div>
+                        <button id="upcoming-details-btn" class="text-primary font-bold text-sm">Details</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div id="action-find-lawyer" class="card p-4 text-center cursor-pointer hover:shadow-lg transition-shadow">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full mx-auto flex items-center justify-center">
+                           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </div>
+                        <p class="font-heading font-semibold mt-2">Find a Lawyer</p>
+                    </div>
+                    <div id="action-document-manager" class="card p-4 text-center cursor-pointer hover:shadow-lg transition-shadow">
+                        <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-full mx-auto flex items-center justify-center">
+                           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                        </div>
+                        <p class="font-heading font-semibold mt-2">Documents</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="bookingScreen" class="screen">
+                <div class="mb-6">
+                    <label class="font-heading font-semibold text-sm mb-2 block">What type of legal help do you need?</label>
+                    <select id="booking-case-type">
+                        <option value="" disabled selected>Select a specialty</option>
+                        <option value="Family Law">Family Law</option>
+                        <option value="Civil Litigation">Civil Litigation</option>
+                        <option value="Corporate Law">Corporate Law</option>
+                        <option value="Cyber Law">Cyber Law</option>
+                        <option value="Criminal Defense">Criminal Defense</option>
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label class="font-heading font-semibold text-sm mb-2 block">How would you like to meet?</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div id="meeting-type-inperson" class="card p-3 text-center cursor-pointer border-2 border-transparent">
+                            <p class="font-semibold">In-Person</p>
+                        </div>
+                        <div id="meeting-type-virtual" class="card p-3 text-center cursor-pointer border-2 border-transparent">
+                            <p class="font-semibold">Virtual</p>
                         </div>
                     </div>
                 </div>
-                <div class="card">
-                    <h3 class="text-sm font-bold mb-2">Quick Actions</h3>
-                    <button id="onlineBtn" class="btn w-full mb-2">Meet Lawyer Online</button>
-                    <button id="nearbyBtn" class="btn w-full mb-2">Find Lawyer Nearby</button>
-                    <button id="profileBtn" class="btn w-full">Edit Profile</button>
+                <div id="location-selection" class="mb-6 hidden">
+                     <label class="font-heading font-semibold text-sm mb-2 block">Select District</label>
+                     <select id="booking-district">
+                        <option value="" disabled selected>Choose a district</option>
+                        <option value="Alappuzha">Alappuzha</option>
+                        <option value="Ernakulam">Ernakulam</option>
+                     </select>
                 </div>
-                <div class="card">
-                    <h3 class="text-sm font-bold mb-2">Recent Appointments</h3>
-                    <div id="recentAppointments" class="text-xs"></div>
-                </div>
+                <button id="find-lawyer-btn" class="btn-primary w-full" disabled>Find Available Lawyers</button>
+            </div>
+            
+            <div id="lawyerListScreen" class="screen">
+                <div id="lawyer-list-container" class="space-y-4"></div>
             </div>
 
-            <!-- Location Screen -->
-            <div id="locationScreen" class="screen card">
-                <h2 class="text-base font-bold mb-3">Select Your District</h2>
-                <div class="progress-bar" style="width: 66%"></div>
-                <input id="districtInput" type="text" list="districtList" placeholder="Type or select district" aria-label="District">
-                <datalist id="districtList">
-                    <option value="Alappuzha">
-                    <option value="Ernakulam">
-                    <option value="Idukki">
-                    <option value="Kannur">
-                    <option value="Kasaragod">
-                    <option value="Kollam">
-                    <option value="Kottayam">
-                    <option value="Kozhikode">
-                    <option value="Malappuram">
-                    <option value="Palakkad">
-                    <option value="Pathanamthitta">
-                    <option value="Thiruvananthapuram">
-                    <option value="Thrissur">
-                    <option value="Wayanad">
-                </datalist>
-                <button id="getLocationBtn" class="btn w-full mb-2">Use My Location</button>
-                <button id="submitDistrictBtn" class="btn w-full">Submit</button>
-            </div>
-
-            <!-- Lawyer Screen -->
-            <div id="lawyerScreen" class="screen card">
-                <h2 class="text-base font-bold mb-3">Available Lawyer</h2>
-                <p id="noLawyerMsg" class="text-xs text-center mb-3 hidden">No legal professionals available in this district.</p>
-                <div id="lawyerInfo">
-                    <div class="card">
-                        <p class="text-xs"><strong>Name:</strong> Gayathri</p>
-                        <p class="text-xs"><strong>Location:</strong> Alappuzha District Court</p>
-                        <p class="text-xs"><strong>Status:</strong> <span id="lawyerStatus">Available Now</span></p>
-                        <p class="text-xs"><strong>Rating:</strong> 5.0 (80 reviews)</p>
-                        <button id="viewLawyerProfile" class="btn w-full mt-2">View Profile</button>
-                        <select id="timeSlotInput" aria-label="Select Time Slot" class="mt-2">
-                            <option value="" disabled selected>Select Time Slot</option>
-                        </select>
-                        <textarea id="notesInput" placeholder="Add Notes (Optional)" class="h-16 text-xs" aria-label="Notes"></textarea>
-                        <label class="flex items-center mb-2 text-xs">
-                            <input type="checkbox" id="priorityInput" class="mr-2"> High Priority
-                        </label>
-                        <input id="attachmentInput" type="file" accept="image/*,application/pdf" aria-label="Attachment">
-                        <button id="bookBtn" class="btn w-full mt-2" disabled>Book Appointment</button>
+            <div id="lawyerProfileScreen" class="screen">
+                <div class="card p-0 overflow-hidden">
+                    <div class="h-24 bg-primary"></div>
+                    <div class="p-4 -mt-12 text-center">
+                        <img id="profile-lawyer-avatar" class="w-24 h-24 rounded-full border-4 border-white mx-auto mb-2">
+                        <h2 id="profile-lawyer-name" class="font-heading text-xl font-bold"></h2>
+                        <p id="profile-lawyer-location" class="text-text-secondary text-sm"></p>
+                    </div>
+                    <div class="flex border-b border-border">
+                        <div id="tab-overview" class="profile-tab active flex-1 text-center">Overview</div>
+                        <div id="tab-availability" class="profile-tab flex-1 text-center">Availability</div>
+                        <div id="tab-reviews" class="profile-tab flex-1 text-center">Reviews</div>
+                    </div>
+                    <div class="p-4">
+                        <div id="content-overview" class="tab-content active"></div>
+                        <div id="content-availability" class="tab-content"></div>
+                        <div id="content-reviews" class="tab-content"></div>
                     </div>
                 </div>
+                <button id="book-profile-btn" class="btn-primary w-full mt-4" disabled>Select Date & Time to Book</button>
+            </div>
+            
+            <div id="appointmentsScreen" class="screen">
+                <div id="appointments-list-container" class="space-y-4"></div>
             </div>
 
-            <!-- Online Booking Screen -->
-            <div id="onlineScreen" class="screen card">
-                <h2 class="text-base font-bold mb-3">Book Online Appointment</h2>
-                <div class="progress-bar" style="width: 100%"></div>
-                <select id="onlineCaseType" aria-label="Case Type">
-                    <option value="" disabled selected>Select Case Type</option>
-                    <option value="Civil">Civil</option>
-                    <option value="Criminal">Criminal</option>
-                    <option value="Family">Family</option>
-                    <option value="Corporate">Corporate</option>
-                </select>
-                <select id="conferenceMethod" aria-label="Conference Method">
-                    <option value="" disabled selected>Select Conference Method</option>
-                    <option value="Call">Call</option>
-                    <option value="WhatsApp Video">WhatsApp Video</option>
-                    <option value="Zoom">Zoom</option>
-                    <option value="Google Meet">Google Meet</option>
-                    <option value="Chat">Chat</option>
-                </select>
-                <select id="timeSlotInputOnline" aria-label="Select Time Slot">
-                    <option value="" disabled selected>Select Time Slot</option>
-                </select>
-                <textarea id="notesInputOnline" placeholder="Add Notes (Optional)" class="h-16 text-xs" aria-label="Notes"></textarea>
-                <label class="flex items-center mb-2 text-xs">
-                    <input type="checkbox" id="recurringInput" class="mr-2"> Recurring Appointment
-                </label>
-                <input id="attachmentInputOnline" type="file" accept="image/*,application/pdf" aria-label="Attachment">
-                <button id="bookOnlineBtn" class="btn w-full" disabled>Book Appointment</button>
+            <div id="appointmentDetailScreen" class="screen">
+                <div id="appointment-details-container"></div>
             </div>
 
-            <!-- Profile Screen -->
-            <div id="profileScreen" class="screen card">
-                <h2 class="text-base font-bold mb-3">Your Profile</h2>
-                <div id="userAvatar" class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl mb-3"></div>
-                <input id="editNameInput" type="text" placeholder="Full Name" aria-label="Edit Name">
-                <input id="editBirthYearInput" type="number" placeholder="Birth Year" aria-label="Edit Birth Year">
-                <select id="editCaseTypeInput" aria-label="Edit Case Type">
-                    <option value="" disabled selected>Select Case Type</option>
-                    <option value="Civil">Civil</option>
-                    <option value="Criminal">Criminal</option>
-                    <option value="Family">Family</option>
-                    <option value="Corporate">Corporate</option>
-                </select>
-                <input id="profilePicInput" type="file" accept="image/*" aria-label="Profile Picture">
-                <select id="languageSelect" aria-label="Language">
-                    <option value="en">English</option>
-                    <option value="ml">Malayalam</option>
-                    <option value="hi">Hindi</option>
-                </select>
-                <select id="fontSizeSelect" aria-label="Font Size">
-                    <option value="14">Normal</option>
-                    <option value="16">Large</option>
-                    <option value="18">Extra Large</option>
-                </select>
-                <button id="saveProfileBtn" class="btn w-full">Save Changes</button>
+            <div id="documentManagerScreen" class="screen">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-heading font-semibold text-lg">Your Documents</h2>
+                    <button id="upload-doc-btn" class="btn-primary !py-2 !px-4 !text-sm">
+                        Upload File
+                    </button>
+                    <input type="file" id="doc-upload-input" class="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                </div>
+                <div id="document-list-container" class="space-y-3"></div>
             </div>
-
-            <!-- Appointments Screen -->
-            <div id="appointmentsScreen" class="screen card">
-                <h2 class="text-base font-bold mb-3">Your Appointments</h2>
-                <input id="searchAppointments" type="text" placeholder="Search by case type or date" aria-label="Search Appointments">
-                <select id="filterAppointments" aria-label="Filter Appointments">
-                    <option value="All">All</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Cancelled">Cancelled</option>
-                    <option value="Completed">Completed</option>
-                </select>
-                <div id="appointmentsList" class="mt-3"></div>
-                <button id="exportAppointmentsBtn" class="btn w-full mt-2">Export as CSV</button>
-            </div>
-
-            <!-- Confirmation Screen -->
-            <div id="confirmationScreen" class="screen card text-center">
-                <h2 class="text-base font-bold mb-3">Appointment Booked!</h2>
-                <div id="handshakeAnimation" class="w-24 h-24 mx-auto"></div>
-                <p class="text-xs mb-3">Your appointment has been confirmed.</p>
-                <button id="previewPDFBtn" class="btn w-full mb-2">Preview PDF</button>
-                <button id="viewAppointmentsBtn" class="btn w-full">View Appointments</button>
-            </div>
-
-            <!-- PDF Preview Screen -->
-            <div id="pdfPreviewScreen" class="screen card">
-                <h2 class="text-base font-bold mb-3">PDF Preview</h2>
-                <div id="pdfPreview" class="border p-3"></div>
-                <button id="downloadPDFBtn" class="btn w-full mt-2">Download PDF</button>
-                <button id="backPDFBtn" class="btn w-full mt-2">Back</button>
-            </div>
-
-            <!-- Modal -->
-            <div id="modal" class="modal">
-                <div class="modal-content">
-                    <p id="modalMessage" class="mb-3 text-xs"></p>
-                    <div class="flex justify-end gap-2">
-                        <button id="modalCancel" class="btn">Cancel</button>
-                        <button id="modalConfirm" class="btn">Confirm</button>
+            
+            <div id="settingsScreen" class="screen">
+                <div class="card p-4">
+                    <h3 class="font-heading font-semibold mb-3">App Settings</h3>
+                    <div class="flex justify-between items-center py-2">
+                        <label for="dark-mode-toggle" class="font-medium">Dark Mode</label>
+                        <label class="switch"><input type="checkbox" id="dark-mode-toggle"><span class="slider"></span></label>
                     </div>
+                </div>
+             </div>
+
+            <div id="confirmationScreen" class="screen text-center pt-8">
+                <div id="confirmation-animation" class="w-40 h-40 mx-auto"></div>
+                <h2 class="font-heading text-2xl font-bold mt-4">Appointment Confirmed!</h2>
+                <p class="text-text-secondary mt-2">You are scheduled to meet with <strong id="conf-lawyer-name"></strong>.</p>
+                <div class="card p-4 mt-6 text-left">
+                    <p class="font-semibold" id="conf-datetime"></p>
+                    <p class="text-sm text-text-secondary" id="conf-location"></p>
+                </div>
+                <button id="back-to-dash-btn" class="btn-primary w-full mt-6">Done</button>
+            </div>
+        </main>
+
+        <div class="fab-container">
+            <div class="fab-options" id="fab-options">
+                <div class="fab-option" data-action="view-appointments">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span>Appointments</span>
+                </div>
+                 <div class="fab-option" data-action="view-settings">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span>Settings</span>
+                </div>
+            </div>
+            <div class="fab" id="fab">
+                <svg id="fab-icon-plus" class="w-8 h-8 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            </div>
+        </div>
+        
+        <!-- Storage Permission Modal -->
+        <div id="storage-permission-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h3 class="font-heading font-semibold text-lg mb-2">Access Storage</h3>
+                <p class="text-sm text-text-secondary mb-4">Legal Connect requires permission to access your files so you can upload your documents. Please click "Proceed" to open the file selector.</p>
+                <div class="flex justify-end gap-3">
+                    <button id="storage-cancel-btn" class="font-semibold text-sm py-2 px-4">Cancel</button>
+                    <button id="storage-proceed-btn" class="btn-primary !py-2 !px-4 !text-sm">Proceed</button>
                 </div>
             </div>
         </div>
 
-        <!-- Bottom Navigation -->
-        <div class="bottom-nav">
-            <div class="nav-item" data-screen="dashboardScreen">
-                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231976d2'><path d='M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z'/></svg>" alt="Dashboard">
-                <span>Dashboard</span>
-            </div>
-            <div class="nav-item" data-screen="appointmentsScreen">
-                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231976d2'><path d='M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.89-1.99 2L3 19c0 1.11.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.11-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z'/></svg>" alt="Appointments">
-                <span>Appointments</span>
-            </div>
-            <div class="nav-item" data-screen="profileScreen">
-                <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231976d2'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" alt="Profile">
-                <span>Profile</span>
-            </div>
-        </div>
     </div>
 
-    <!-- Floating Action Button -->
-    <div class="fab" id="fab">➕</div>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="toast"></div>
-
     <script>
-        const { jsPDF } = window.jspdf;
+    document.addEventListener('DOMContentLoaded', () => {
+        let state = {
+            currentUser: null,
+            appointments: [],
+            documents: [],
+            settings: { darkMode: false },
+            currentScreen: 'splashScreen',
+            booking: { lawyer: null, meetingType: null, district: null, date: null, time: null, caseType: null },
+            fabOpen: false,
+        };
 
-        // Screen management
-        const screens = document.querySelectorAll('.screen');
-        function showScreen(screenId) {
-            screens.forEach(screen => screen.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            document.getElementById('loadingScreen').classList.add('active');
-            setTimeout(() => document.getElementById('loadingScreen').classList.remove('active'), 300);
-            localStorage.setItem('lastScreen', screenId);
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.toggle('active', item.dataset.screen === screenId);
-            });
-        }
+        const lawyers = [
+            { 
+                id: 1, name: 'Gayathri', location: 'Alappuzha District Court', district: 'Alappuzha', 
+                avatar: 'https://placehold.co/96x96/fbcfe8/9d266f?text=G',
+                bio: 'A dedicated advocate committed to providing compassionate and effective legal solutions.',
+                specialties: ['Family Law', 'Civil Litigation'],
+                experience: 'Not specified',
+                reviews: [
+                    { name: 'Rajesh K.', rating: 5, comment: 'Very professional and helpful throughout my case.' },
+                    { name: 'Anitha S.', rating: 5, comment: 'Provided clear guidance and support. Highly recommend.' },
+                ]
+            },
+            { 
+                id: 2, name: 'Adv. Smitha', location: 'Ernakulam High Court', district: 'Ernakulam',
+                avatar: 'https://placehold.co/96x96/cce7f5/1e40af?text=S',
+                bio: 'A seasoned professional known for a meticulous approach and strong courtroom presence.',
+                specialties: ['Corporate Law', 'Cyber Law', 'Criminal Defense'],
+                experience: 'Not specified',
+                reviews: [
+                    { name: 'John P.', rating: 5, comment: 'Excellent legal mind. Her advice was invaluable.' },
+                    { name: 'Fathima B.', rating: 4, comment: 'Handled my case with great care.' },
+                ]
+            },
+        ];
 
-        // Toast notifications
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
+        const dom = {
+            header: { title: document.getElementById('header-title'), actions: document.getElementById('header-actions') },
+            fab: document.getElementById('fab'), fabOptions: document.getElementById('fab-options'),
+            loginBtn: document.getElementById('loginBtn'), nameInput: document.getElementById('nameInput'),
+            storageModal: document.getElementById('storage-permission-modal'),
+            storageCancel: document.getElementById('storage-cancel-btn'),
+            storageProceed: document.getElementById('storage-proceed-btn'),
+        };
 
-        // Modal
-        function showModal(message, onConfirm) {
-            const modal = document.getElementById('modal');
-            document.getElementById('modalMessage').textContent = message;
-            modal.classList.add('active');
-            const confirmBtn = document.getElementById('modalConfirm');
-            const cancelBtn = document.getElementById('modalCancel');
-            const handler = () => {
-                modal.classList.remove('active');
-                onConfirm();
-                confirmBtn.removeEventListener('click', handler);
-            };
-            confirmBtn.addEventListener('click', handler);
-            cancelBtn.addEventListener('click', () => modal.classList.remove('active'));
-        }
-
-        // Handshake animation
-        function loadHandshakeAnimation() {
-            lottie.loadAnimation({
-                container: document.getElementById('handshakeAnimation'),
-                renderer: 'svg',
-                loop: false,
-                autoplay: true,
-                path: 'https://assets9.lottiefiles.com/packages/lf20_jbrw3hsa.json'
-            });
-        }
-
-        // Local storage and user data
-        let userData = JSON.parse(localStorage.getItem('userData'));
-        if (userData) {
-            showScreen(localStorage.getItem('lastScreen') || 'dashboardScreen');
-            updateAvatar();
-            updateProfileProgress();
-            document.getElementById('welcomeMsg').textContent = `Welcome, ${userData.name}!`;
-        } else {
-            showScreen('signupScreen');
-        }
-
-        // Theme toggle
-        function toggleTheme() {
-            document.body.classList.toggle('dark');
-            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-        }
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark');
-        }
-
-        // Input validation
-        function validateInputs(inputs, button) {
-            const allFilled = Array.from(inputs).every(input => input.value);
-            button.disabled = !allFilled;
-            inputs.forEach(input => {
-                input.classList.remove('error');
-                if (!input.value) input.classList.add('error');
-            });
-        }
-
-        // Signup validation
-        const signupInputs = [document.getElementById('nameInput'), document.getElementById('birthYearInput'), document.getElementById('caseTypeInput')];
-        signupInputs.forEach(input => input.addEventListener('input', () => validateInputs(signupInputs, document.getElementById('signupBtn'))));
-
-        // Online booking validation
-        const onlineInputs = [document.getElementById('onlineCaseType'), document.getElementById('conferenceMethod'), document.getElementById('timeSlotInputOnline')];
-        onlineInputs.forEach(input => input.addEventListener('input', () => validateInputs(onlineInputs, document.getElementById('bookOnlineBtn'))));
-
-        // Lawyer booking validation
-        const lawyerInputs = [document.getElementById('timeSlotInput')];
-        lawyerInputs.forEach(input => input.addEventListener('input', () => validateInputs(lawyerInputs, document.getElementById('bookBtn'))));
-
-        // Avatar generation
-        function updateAvatar() {
-            const avatars = document.querySelectorAll('#userAvatar');
-            avatars.forEach(avatar => {
-                if (userData.profilePic) {
-                    avatar.style.backgroundImage = `url(${userData.profilePic})`;
-                    avatar.style.backgroundSize = 'cover';
-                    avatar.textContent = '';
-                } else if (userData) {
-                    avatar.textContent = userData.name.charAt(0).toUpperCase();
+        const navigate = (screenId, title, options = {}) => {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+                state.currentScreen = screenId;
+            }
+            dom.header.title.textContent = title;
+            dom.header.actions.innerHTML = '';
+            if (options.back) {
+                const backBtn = document.createElement('button');
+                backBtn.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>`;
+                backBtn.onclick = () => navigate(options.back.screen, options.back.title, options.back.options);
+                dom.header.actions.appendChild(backBtn);
+            }
+        };
+        
+        const renderLawyerList = (filteredLawyers) => {
+            const container = document.getElementById('lawyer-list-container');
+            container.innerHTML = `<div class="text-center text-text-secondary p-4">Finding available lawyers...</div>`;
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+                if(filteredLawyers.length === 0) {
+                    container.innerHTML = `<p class="text-center text-text-secondary card p-4">No lawyers found specializing in <strong>${state.booking.caseType}</strong> for your criteria.</p>`;
+                    return;
                 }
-            });
-        }
-
-        // Profile progress
-        function updateProfileProgress() {
-            const fields = ['name', 'birthYear', 'caseType', 'profilePic', 'language', 'fontSize'];
-            const filled = fields.filter(field => userData[field]).length;
-            const progress = (filled / fields.length) * 100;
-            document.getElementById('profileProgress').style.width = `${progress}%`;
-        }
-
-        // Generate time slots
-        function generateTimeSlots(selectId) {
-            const select = document.getElementById(selectId);
-            select.innerHTML = '<option value="" disabled selected>Select Time Slot</option>';
-            const now = new Date();
-            for (let i = 1; i <= 7; i++) {
-                const date = new Date(now.getTime() + i * 24 * 60 * 60 * 1000);
-                ['10:00', '14:00', '16:00'].forEach(time => {
-                    const value = `${date.toISOString().split('T')[0]}T${time}`;
-                    const option = document.createElement('option');
-                    option.value = value;
-                    option.textContent = `${date.toLocaleDateString()} ${time}`;
-                    select.appendChild(option);
+                filteredLawyers.forEach(lawyer => {
+                    const card = document.createElement('div');
+                    card.className = 'card p-4';
+                    card.innerHTML = `
+                        <div class="flex items-start gap-4">
+                            <img src="${lawyer.avatar}" class="w-16 h-16 rounded-full">
+                            <div>
+                                <p class="font-heading font-bold">${lawyer.name}</p>
+                                <p class="text-sm text-text-secondary">${lawyer.location}</p>
+                                <div class="flex flex-wrap gap-1 mt-2">
+                                    ${lawyer.specialties.map(s => `<span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">${s}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-primary w-full mt-4 text-sm" data-lawyer-id="${lawyer.id}">View Profile & Availability</button>
+                    `;
+                    container.appendChild(card);
                 });
-            }
-        }
-        generateTimeSlots('timeSlotInput');
-        generateTimeSlots('timeSlotInputOnline');
+                container.querySelectorAll('button').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const lawyer = lawyers.find(l => l.id == btn.dataset.lawyerId);
+                        showLawyerProfile(lawyer);
+                    });
+                });
+            }, 500); // Simulate network delay
+        };
+        
+        const showLawyerProfile = (lawyer) => {
+            state.booking.lawyer = lawyer;
+            document.getElementById('profile-lawyer-avatar').src = lawyer.avatar;
+            document.getElementById('profile-lawyer-name').textContent = lawyer.name;
+            document.getElementById('profile-lawyer-location').textContent = lawyer.location;
+            
+            renderProfileOverview(lawyer);
+            renderProfileAvailability(lawyer);
+            renderProfileReviews(lawyer);
 
-        // Bottom navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const screen = item.dataset.screen;
-                showScreen(screen);
-                if (screen === 'appointmentsScreen') displayAppointments();
-            });
-        });
+            document.getElementById('book-profile-btn').onclick = () => bookAppointment();
+            document.getElementById('book-profile-btn').disabled = true;
 
-        // Signup
-        document.getElementById('signupBtn').addEventListener('click', () => {
-            const name = document.getElementById('nameInput').value;
-            const birthYear = document.getElementById('birthYearInput').value;
-            const caseType = document.getElementById('caseTypeInput').value;
-            if (!name.match(/^[A-Za-z\s]{2,}$/)) {
-                showToast('Invalid name');
-                document.getElementById('nameInput').classList.add('error');
-                return;
-            }
-            if (birthYear < 1900 || birthYear > new Date().getFullYear()) {
-                showToast('Invalid birth year');
-                document.getElementById('birthYearInput').classList.add('error');
-                return;
-            }
-            userData = { name, birthYear, caseType, language: 'en', fontSize: '14' };
-            localStorage.setItem('userData', JSON.stringify(userData));
-            updateAvatar();
-            updateProfileProgress();
-            showScreen('dashboardScreen');
-            document.getElementById('welcomeMsg').textContent = `Welcome, ${userData.name}!`;
-            showToast('Signup successful!');
-            logActivity('User signed up');
-        });
+            navigate('lawyerProfileScreen', 'Lawyer Profile', { back: { screen: 'lawyerListScreen', title: 'Available Lawyers' } });
+        };
 
-        // Navigation
-        document.getElementById('onlineBtn').addEventListener('click', () => showScreen('onlineScreen'));
-        document.getElementById('nearbyBtn').addEventListener('click', () => showScreen('locationScreen'));
-        document.getElementById('profileBtn').addEventListener('click', () => {
-            document.getElementById('editNameInput').value = userData.name;
-            document.getElementById('editBirthYearInput').value = userData.birthYear;
-            document.getElementById('editCaseTypeInput').value = userData.caseType;
-            document.getElementById('languageSelect').value = userData.language || 'en';
-            document.getElementById('fontSizeSelect').value = userData.fontSize || '14';
-            showScreen('profileScreen');
-        });
+        const renderProfileOverview = (lawyer) => {
+            document.getElementById('content-overview').innerHTML = `
+                <h3 class="font-heading font-semibold mb-2">About</h3>
+                <p class="text-sm text-text-secondary mb-4">${lawyer.bio}</p>
+                <h3 class="font-heading font-semibold mb-2">Specialties</h3>
+                <div class="flex flex-wrap gap-2">
+                    ${lawyer.specialties.map(s => `<span class="text-sm bg-blue-50 text-blue-800 px-3 py-1 rounded-full font-medium">${s}</span>`).join('')}
+                </div>
+            `;
+        };
+        
+        const renderProfileAvailability = (lawyer) => {
+            const container = document.getElementById('content-availability');
+            container.innerHTML = `<div id="calendar-container" class="mb-4"></div><div id="time-slots-container" class="hidden"><h3 class="font-heading font-semibold mb-2">Available Times</h3><div id="time-slots-grid" class="grid grid-cols-3 gap-2"></div></div>`;
+            renderCalendar(new Date());
+        };
+        
+        const renderCalendar = (date) => {
+            const container = document.getElementById('calendar-container');
+            const month = date.getMonth(), year = date.getFullYear();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        // Location selection
-        document.getElementById('submitDistrictBtn').addEventListener('click', () => {
-            const district = document.getElementById('districtInput').value;
-            if (!district) {
-                showToast('Please select a district');
-                document.getElementById('districtInput').classList.add('error');
-                return;
-            }
-            showScreen('lawyerScreen');
-            const noLawyerMsg = document.getElementById('noLawyerMsg');
-            const lawyerInfo = document.getElementById('lawyerInfo');
-            if (district === 'Alappuzha') {
-                noLawyerMsg.classList.add('hidden');
-                lawyerInfo.classList.remove('hidden');
-                document.getElementById('lawyerStatus').textContent = new Date().getHours() < 17 ? 'Available Now' : 'Available Tomorrow';
-            } else {
-                noLawyerMsg.classList.remove('hidden');
-                lawyerInfo.classList.add('hidden');
-            }
-            logActivity(`Selected district: ${district}`);
-        });
+            let html = `<div class="flex justify-between items-center mb-2"><button id="prev-month">&lt;</button><p class="font-heading font-semibold">${date.toLocaleString('default', { month: 'long' })} ${year}</p><button id="next-month">&gt;</button></div><div id="calendar-grid">${['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => `<div class="font-bold text-center text-xs text-text-secondary">${d}</div>`).join('')}`;
+            for(let i = 0; i < firstDay; i++) html += `<div></div>`;
+            for(let i = 1; i <= daysInMonth; i++) html += `<div class="calendar-day" data-day="${i}">${i}</div>`;
+            html += `</div>`;
+            container.innerHTML = html;
 
-        // Geo-location
-        document.getElementById('getLocationBtn').addEventListener('click', () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(() => {
-                    document.getElementById('districtInput').value = 'Alappuzha';
-                    showToast('Location detected: Alappuzha');
-                }, () => showToast('Location access denied'));
-            } else {
-                showToast('Geolocation not supported');
-            }
-        });
-
-        // Lawyer profile
-        document.getElementById('viewLawyerProfile').addEventListener('click', () => showScreen('lawyerProfileScreen'));
-
-        // Book nearby appointment
-        let currentAppointment;
-        document.getElementById('bookBtn').addEventListener('click', () => {
-            const timeSlot = document.getElementById('timeSlotInput').value;
-            const notes = escapingHTML(document.getElementById('notesInput').value);
-            const priority = document.getElementById('priorityInput').checked;
-            const attachment = document.getElementById('attachmentInput').files[0];
-            if (!timeSlot) {
-                showToast('Please select a time slot');
-                document.getElementById('timeSlotInput').classList.add('error');
-                return;
-            }
-            showModal('Confirm booking?', () => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    currentAppointment = {
-                        id: Date.now(),
-                        lawyer: 'Gayathri',
-                        location: 'Alappuzha District Court',
-                        caseType: userData.caseType,
-                        dateTime: timeSlot,
-                        status: 'Confirmed',
-                        notes,
-                        tags: priority ? ['Urgent', 'Priority'] : ['Urgent'],
-                        attachment: reader.result || null
-                    };
-                    if (saveAppointment(currentAppointment)) {
-                        generatePDF(currentAppointment);
-                        showScreen('confirmationScreen');
-                        loadHandshakeAnimation();
-                        showToast('Appointment booked!');
-                        logActivity('Booked nearby appointment');
-                        updateRecentAppointments();
-                    }
+            document.getElementById('prev-month').onclick = () => renderCalendar(new Date(year, month - 1, 1));
+            document.getElementById('next-month').onclick = () => renderCalendar(new Date(year, month + 1, 1));
+            
+            container.querySelectorAll('.calendar-day').forEach(day => {
+                day.onclick = () => {
+                    container.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+                    day.classList.add('selected');
+                    state.booking.date = new Date(year, month, day.dataset.day);
+                    renderTimeSlots();
                 };
-                if (attachment) reader.readAsDataURL(attachment);
-                else reader.onload();
             });
-        });
-
-        // Book online appointment
-        document.getElementById('bookOnlineBtn').addEventListener('click', () => {
-            const caseType = document.getElementById('onlineCaseType').value;
-            const conferenceMethod = document.getElementById('conferenceMethod').value;
-            const timeSlot = document.getElementById('timeSlotInputOnline').value;
-            const notes = escapingHTML(document.getElementById('notesInputOnline').value);
-            const recurring = document.getElementById('recurringInput').checked;
-            const attachment = document.getElementById('attachmentInputOnline').files[0];
-            if (!caseType || !conferenceMethod || !timeSlot) {
-                showToast('Please fill all required fields');
-                return;
-            }
-            showModal('Confirm booking?', () => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    currentAppointment = {
-                        id: Date.now(),
-                        lawyer: 'Gayathri',
-                        location: 'Online - Alappuzha',
-                        caseType,
-                        conferenceMethod,
-                        dateTime: timeSlot,
-                        status: 'Confirmed',
-                        notes,
-                        tags: recurring ? ['Online', 'Recurring'] : ['Online'],
-                        attachment: reader.result || null
-                    };
-                    if (saveAppointment(currentAppointment)) {
-                        generatePDF(currentAppointment);
-                        showScreen('confirmationScreen');
-                        loadHandshakeAnimation();
-                        showToast('Appointment booked!');
-                        logActivity('Booked online appointment');
-                        updateRecentAppointments();
-                    }
+        };
+        
+        const renderTimeSlots = () => {
+            const container = document.getElementById('time-slots-container'), grid = document.getElementById('time-slots-grid');
+            container.classList.remove('hidden');
+            grid.innerHTML = '';
+            ['10:00 AM', '11:00 AM', '02:00 PM', '03:00 PM', '04:00 PM'].forEach(slot => {
+                const btn = document.createElement('button');
+                btn.className = 'p-2 border rounded-lg text-sm hover:bg-gray-100';
+                btn.textContent = slot;
+                btn.onclick = () => {
+                    grid.querySelectorAll('button').forEach(b => b.classList.remove('bg-primary', 'text-white'));
+                    btn.classList.add('bg-primary', 'text-white');
+                    state.booking.time = slot;
+                    document.getElementById('book-profile-btn').disabled = false;
                 };
-                if (attachment) reader.readAsDataURL(attachment);
-                else reader.onload();
-            });
-        });
-
-        // Save profile
-        document.getElementById('saveProfileBtn').addEventListener('click', () => {
-            const name = document.getElementById('editNameInput').value;
-            const birthYear = document.getElementById('editBirthYearInput').value;
-            const caseType = document.getElementById('editCaseTypeInput').value;
-            const language = document.getElementById('languageSelect').value;
-            const fontSize = document.getElementById('fontSizeSelect').value;
-            if (!name.match(/^[A-Za-z\s]{2,}$/)) {
-                showToast('Invalid name');
-                document.getElementById('editNameInput').classList.add('error');
-                return;
-            }
-            if (birthYear < 1900 || birthYear > new Date().getFullYear()) {
-                showToast('Invalid birth year');
-                document.getElementById('editBirthYearInput').classList.add('error');
-                return;
-            }
-            userData = { ...userData, name, birthYear, caseType, language, fontSize };
-            localStorage.setItem('userData', JSON.stringify(userData));
-            document.body.style.fontSize = `${fontSize}px`;
-            updateAvatar();
-            updateProfileProgress();
-            showScreen('dashboardScreen');
-            showToast('Profile updated!');
-            logActivity('Updated profile');
-        });
-
-        // Profile picture upload
-        document.getElementById('profilePicInput').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    userData.profilePic = reader.result;
-                    localStorage.setItem('userData', JSON.stringify(userData));
-                    updateAvatar();
-                    updateProfileProgress();
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Save appointment
-        function saveAppointment(appointment) {
-            const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-            if (appointments.length >= 10) {
-                showToast('Booking limit reached (10 appointments)');
-                return false;
-            }
-            appointments.push(appointment);
-            localStorage.setItem('appointments', JSON.stringify(appointments));
-            return true;
-        }
-
-        // Display appointments
-        function displayAppointments() {
-            const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-            const filter = document.getElementById('filterAppointments').value;
-            const search = document.getElementById('searchAppointments').value.toLowerCase();
-            let filtered = appointments.filter(apt => filter === 'All' || apt.status === filter);
-            filtered = filtered.filter(apt => 
-                apt.caseType.toLowerCase().includes(search) || 
-                new Date(apt.dateTime).toLocaleString().toLowerCase().includes(search)
-            );
-            filtered.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
-            const list = document.getElementById('appointmentsList');
-            list.innerHTML = '';
-            filtered.forEach(apt => {
-                const div = document.createElement('div');
-                div.className = 'p-2 border rounded mb-2 card';
-                div.innerHTML = `
-                    <p class="text-xs"><strong>Lawyer:</strong> ${apt.lawyer}</p>
-                    <p class="text-xs"><strong>Location:</strong> ${apt.location}</p>
-                    <p class="text-xs"><strong>Case Type:</strong> ${apt.caseType}</p>
-                    <p class="text-xs"><strong>Date:</strong> ${new Date(apt.dateTime).toLocaleString()}</p>
-                    ${apt.conferenceMethod ? `<p class="text-xs"><strong>Method:</strong> ${apt.conferenceMethod}</p>` : ''}
-                    ${apt.notes ? `<p class="text-xs"><strong>Notes:</strong> ${apt.notes}</p>` : ''}
-                    <p class="text-xs"><strong>Status:</strong> ${apt.status}</p>
-                    <div class="flex flex-wrap gap-2 mt-2">
-                        <button class="btn text-xs" onclick="cancelAppointment(${apt.id})">Cancel</button>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        // Cancel appointment
-        window.cancelAppointment = function(id) {
-            showModal('Cancel this appointment?', () => {
-                const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-                const updated = appointments.map(apt => apt.id === id ? { ...apt, status: 'Cancelled' } : apt);
-                localStorage.setItem('appointments', JSON.stringify(updated));
-                displayAppointments();
-                showToast('Appointment cancelled');
-                logActivity('Cancelled appointment');
-                updateRecentAppointments();
+                grid.appendChild(btn);
             });
         };
 
-        // Generate PDF
-        function generatePDF(appointment) {
-            const doc = new jsPDF();
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(10);
-            doc.addImage('s1.png', 'PNG', 15, 10, 20, 20);
-            doc.text('Legal Connect', 35, 15);
-            doc.setFontSize(12);
-            doc.text('Appointment Confirmation', 15, 35);
-            doc.setFontSize(10);
-            doc.text(`Name: ${userData.name}`, 15, 45);
-            doc.text(`Lawyer: ${appointment.lawyer}`, 15, 50);
-            doc.text(`Location: ${appointment.location}`, 15, 55);
-            doc.text(`Case Type: ${appointment.caseType}`, 15, 60);
-            doc.text(`Date & Time: ${new Date(appointment.dateTime).toLocaleString()}`, 15, 65);
-            let yOffset = 65;
-            if (appointment.conferenceMethod) {
-                yOffset += 5;
-                doc.text(`Conference Method: ${appointment.conferenceMethod}`, 15, yOffset);
+        const renderProfileReviews = (lawyer) => {
+            document.getElementById('content-reviews').innerHTML = lawyer.reviews.map(review => `<div class="border-b border-border pb-3 mb-3"><div class="flex justify-between items-center"><p class="font-semibold">${review.name}</p><p class="text-sm text-amber-500 font-bold">★ ${review.rating}.0</p></div><p class="text-sm text-text-secondary mt-1">${review.comment}</p></div>`).join('');
+        };
+        
+        const renderAppointmentsList = () => {
+            const container = document.getElementById('appointments-list-container');
+            container.innerHTML = '';
+            if (state.appointments.length === 0) {
+                container.innerHTML = `<p class="card text-center text-text-secondary p-4">You have no appointments scheduled.</p>`;
+                return;
             }
-            if (appointment.notes) {
-                yOffset += 5;
-                doc.text('Notes:', 15, yOffset);
-                doc.text(doc.splitTextToSize(appointment.notes, 170), 15, yOffset + 5);
-                yOffset += 10;
-            }
-            doc.setFontSize(8);
-            doc.text('Generated on May 23, 2025', 15, 280);
-            currentAppointment.pdfData = doc.output('datauristring');
-            doc.save(`Appointment_${appointment.id}.pdf`);
-        }
+            [...state.appointments].sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(apt => {
+                const card = document.createElement('div');
+                card.className = 'card p-4';
+                const isPast = new Date(apt.date) < new Date();
+                card.innerHTML = `<div class="flex justify-between items-start ${isPast ? 'opacity-60' : ''}"><div><p class="font-heading font-bold">${apt.lawyer.name}</p><p class="text-sm text-text-secondary">${new Date(apt.date).toDateString()}, ${apt.time}</p><p class="text-xs text-text-secondary">${apt.location}</p></div><span class="text-xs font-medium px-2 py-1 rounded-full ${isPast ? 'bg-gray-100 text-gray-800' : 'bg-green-100 text-green-800'}">${isPast ? 'Completed' : 'Upcoming'}</span></div>`;
+                container.appendChild(card);
+            });
+        };
 
-        // PDF preview
-        document.getElementById('previewPDFBtn').addEventListener('click', () => {
-            showScreen('pdfPreviewScreen');
-            const preview = document.getElementById('pdfPreview');
-            preview.innerHTML = '';
-            const pdfContent = document.createElement('div');
-            pdfContent.style.cssText = 'padding: 10px; background: white; color: black; font-family: Helvetica, sans-serif; font-size: 10px;';
-            pdfContent.innerHTML = `
-                <img src="s1.png" style="width: 20px; height: 20px;">
-                <h1 style="font-size: 12px; margin: 5px 0;">Legal Connect</h1>
-                <h2 style="font-size: 10px;">Appointment Confirmation</h2>
-                <p><strong>Name:</strong> ${userData.name}</p>
-                <p><strong>Lawyer:</strong> ${currentAppointment.lawyer}</p>
-                <p><strong>Location:</strong> ${currentAppointment.location}</p>
-                <p><strong>Case Type:</strong> ${currentAppointment.caseType}</p>
-                <p><strong>Date & Time:</strong> ${new Date(currentAppointment.dateTime).toLocaleString()}</p>
-                ${currentAppointment.conferenceMethod ? `<p><strong>Conference Method:</strong> ${currentAppointment.conferenceMethod}</p>` : ''}
-                ${currentAppointment.notes ? `<p><strong>Notes:</strong> ${currentAppointment.notes}</p>` : ''}
-                <p style="font-size: 8px; position: absolute; bottom: 0;">Generated on May 23, 2025</p>
+        const showAppointmentDetails = (appointment) => {
+            const container = document.getElementById('appointment-details-container');
+            container.innerHTML = `
+                <div class="card p-4">
+                    <p class="font-heading font-bold text-lg">${appointment.lawyer.name}</p>
+                    <p class="text-sm text-text-secondary">${appointment.lawyer.location}</p>
+                    <div class="my-4 border-t border-border"></div>
+                    <p><strong>Date:</strong> ${new Date(appointment.date).toDateString()}</p>
+                    <p><strong>Time:</strong> ${appointment.time}</p>
+                    <p><strong>Type:</strong> ${appointment.location === 'Virtual Meeting' ? 'Virtual' : 'In-Person'}</p>
+                </div>
+                ${appointment.location !== 'Virtual Meeting' ? `<div class="card p-4 mt-4"><h3 class="font-heading font-semibold mb-2">Location</h3><img src="https://placehold.co/600x300/e2e8f0/475569?text=Map+to+${appointment.lawyer.location.replace(/\s/g,'+')}" class="rounded-lg w-full"></div>` : ''}
+                <button id="cancel-appointment-btn" class="w-full text-center py-3 mt-4 text-red-500 bg-red-100 rounded-lg">Cancel Appointment</button>
             `;
-            preview.appendChild(pdfContent);
-            html2canvas(pdfContent, { scale: 2 }).then(canvas => {
-                preview.innerHTML = '';
-                preview.appendChild(canvas);
-            });
-        });
-        document.getElementById('downloadPDFBtn').addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.href = currentAppointment.pdfData;
-            link.download = `Appointment_${currentAppointment.id}.pdf`;
-            link.click();
-        });
-        document.getElementById('backPDFBtn').addEventListener('click', () => showScreen('confirmationScreen'));
-
-        // Recent appointments
-        function updateRecentAppointments() {
-            const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-            const recent = appointments.slice(-2);
-            const list = document.getElementById('recentAppointments');
-            list.innerHTML = '';
-            recent.forEach(apt => {
-                const div = document.createElement('div');
-                div.className = 'p-1 border-b';
-                div.innerHTML = `
-                    <p class="text-xs"><strong>${apt.lawyer}</strong> - ${apt.caseType}</p>
-                    <p class="text-xs">${new Date(apt.dateTime).toLocaleString()}</p>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        // Export appointments as CSV
-        document.getElementById('exportAppointmentsBtn').addEventListener('click', () => {
-            const appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-            const csv = ['ID,Lawyer,Location,Case Type,Date,Method,Notes,Status'];
-            appointments.forEach(apt => {
-                csv.push(`${apt.id},${apt.lawyer},${apt.location},${apt.caseType},${new Date(apt.dateTime).toLocaleString()},${apt.conferenceMethod || ''},${apt.notes || ''},${apt.status}`);
-            });
-            const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'Appointments.csv';
-            link.click();
-            logActivity('Exported appointments as CSV');
-        });
-
-        // Navigation
-        document.getElementById('viewAppointmentsBtn').addEventListener('click', () => {
-            showScreen('appointmentsScreen');
-            displayAppointments();
-        });
-
-        // Floating action button
-        document.getElementById('fab').addEventListener('click', () => showScreen('dashboardScreen'));
-
-        // Search and filter appointments
-        document.getElementById('searchAppointments').addEventListener('input', displayAppointments);
-        document.getElementById('filterAppointments').addEventListener('change', displayAppointments);
-
-        // Activity logging
-        function logActivity(action) {
-            const logs = JSON.parse(localStorage.getItem('activityLogs')) || [];
-            logs.push({ action, timestamp: new Date().toISOString() });
-            if (logs.length > 50) logs.shift();
-            localStorage.setItem('activityLogs', JSON.stringify(logs));
-        }
-
-        // HTML escaping
-        function escapingHTML(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
-
-        // Initialize on page load
-        window.addEventListener('load', () => {
-            updateRecentAppointments();
-            if (userData) {
-                showScreen(localStorage.getItem('lastScreen') || 'dashboardScreen');
+            document.getElementById('cancel-appointment-btn').onclick = () => cancelAppointment(appointment.id);
+            navigate('appointmentDetailScreen', 'Appointment Details', { back: { screen: 'dashboardScreen', title: `Hi, ${state.currentUser.name.split(' ')[0]}` } });
+        };
+        
+        const cancelAppointment = (id) => {
+            if(confirm('Are you sure you want to cancel this appointment?')){
+                state.appointments = state.appointments.filter(apt => apt.id !== id);
+                updateDashboard();
+                navigate('dashboardScreen', `Hi, ${state.currentUser.name.split(' ')[0]}`);
             }
+        };
+
+        const bookAppointment = () => {
+            if (!state.booking.date || !state.booking.time) { alert('Please select a date and time.'); return; }
+            const newAppointment = { id: Date.now(), lawyer: state.booking.lawyer, date: state.booking.date, time: state.booking.time, location: state.booking.meetingType === 'In-Person' ? `${state.booking.lawyer.location}` : 'Virtual Meeting' };
+            state.appointments.push(newAppointment);
+            
+            document.getElementById('conf-lawyer-name').textContent = newAppointment.lawyer.name;
+            document.getElementById('conf-datetime').textContent = `${new Date(newAppointment.date).toDateString()}, ${newAppointment.time}`;
+            document.getElementById('conf-location').textContent = newAppointment.location;
+            
+            const animationContainer = document.getElementById('confirmation-animation');
+            animationContainer.innerHTML = '';
+            lottie.loadAnimation({ container: animationContainer, renderer: 'svg', loop: false, autoplay: true, path: 'https://assets2.lottiefiles.com/packages/lf20_xwmj0hsk.json' });
+
+            navigate('confirmationScreen', 'Confirmed!');
+            updateDashboard();
+        };
+        
+        const updateDashboard = () => {
+            const upcomingCard = document.getElementById('upcoming-appointment-card');
+            const upcoming = state.appointments.filter(a => new Date(a.date) >= new Date()).sort((a,b) => new Date(a.date) - new Date(b.date))[0];
+            
+            if (upcoming) {
+                document.getElementById('upcoming-lawyer').textContent = upcoming.lawyer.name;
+                document.getElementById('upcoming-datetime').textContent = `${new Date(upcoming.date).toDateString()}, ${upcoming.time}`;
+                document.getElementById('upcoming-details-btn').onclick = () => showAppointmentDetails(upcoming);
+                upcomingCard.classList.remove('hidden');
+            } else {
+                upcomingCard.classList.add('hidden');
+            }
+        };
+
+        const renderDocumentManager = () => {
+            const container = document.getElementById('document-list-container');
+            container.innerHTML = '';
+            if (state.documents.length === 0) {
+                container.innerHTML = `<p class="text-center text-text-secondary card p-8">No documents uploaded yet. Tap the button to add your first file.</p>`;
+                return;
+            }
+            state.documents.forEach(doc => {
+                const docEl = document.createElement('div');
+                docEl.className = 'card p-3 flex items-center justify-between';
+                docEl.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <div>
+                            <p class="font-semibold text-sm">${doc.name}</p>
+                            <p class="text-xs text-text-secondary">${(doc.size / 1024).toFixed(2)} KB</p>
+                        </div>
+                    </div>
+                    <button class="text-red-500 text-xs hover:underline" data-doc-id="${doc.id}">Delete</button>
+                `;
+                container.appendChild(docEl);
+            });
+        };
+
+        const handleFileUpload = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            state.documents.push({ id: Date.now(), name: file.name, size: file.size });
+            renderDocumentManager();
+        };
+
+        const renderSettings = () => {
+            document.getElementById('dark-mode-toggle').checked = state.settings.darkMode;
+        };
+
+        const applySettings = () => {
+            if (state.settings.darkMode) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            localStorage.setItem('legalConnectSettings', JSON.stringify(state.settings));
+        };
+
+        // --- EVENT LISTENERS ---
+        dom.loginBtn.addEventListener('click', () => {
+            const name = dom.nameInput.value.trim();
+            if (name) { state.currentUser = { name }; navigate('dashboardScreen', `Hi, ${name.split(' ')[0]}`); }
         });
+
+        dom.fab.addEventListener('click', () => {
+            state.fabOpen = !state.fabOpen;
+            dom.fab.classList.toggle('active', state.fabOpen);
+            dom.fabOptions.classList.toggle('active', state.fabOpen);
+        });
+
+        document.querySelector('[data-action="view-appointments"]').addEventListener('click', () => {
+            state.fabOpen = false; dom.fab.classList.remove('active'); dom.fabOptions.classList.remove('active');
+            renderAppointmentsList();
+            navigate('appointmentsScreen', 'My Appointments', { back: { screen: 'dashboardScreen', title: `Hi, ${state.currentUser.name.split(' ')[0]}` } });
+        });
+
+        document.querySelector('[data-action="view-settings"]').addEventListener('click', () => {
+            state.fabOpen = false; dom.fab.classList.remove('active'); dom.fabOptions.classList.remove('active');
+            renderSettings();
+            navigate('settingsScreen', 'Settings', { back: { screen: 'dashboardScreen', title: `Hi, ${state.currentUser.name.split(' ')[0]}` } });
+        });
+        
+        document.getElementById('action-find-lawyer').addEventListener('click', () => navigate('bookingScreen', 'New Appointment', { back: { screen: 'dashboardScreen', title: `Hi, ${state.currentUser.name.split(' ')[0]}` } }));
+        document.getElementById('action-document-manager').addEventListener('click', () => {
+            renderDocumentManager();
+            navigate('documentManagerScreen', 'Document Manager', { back: { screen: 'dashboardScreen', title: `Hi, ${state.currentUser.name.split(' ')[0]}` } });
+        });
+        
+        const meetingTypes = document.querySelectorAll('#meeting-type-inperson, #meeting-type-virtual');
+        meetingTypes.forEach(btn => {
+            btn.addEventListener('click', () => {
+                meetingTypes.forEach(b => b.classList.remove('border-accent', 'bg-amber-50'));
+                btn.classList.add('border-accent', 'bg-amber-50');
+                state.booking.meetingType = btn.id.includes('inperson') ? 'In-Person' : 'Virtual';
+                document.getElementById('location-selection').style.display = state.booking.meetingType === 'In-Person' ? 'block' : 'none';
+                checkBookingReady();
+            });
+        });
+
+        const checkBookingReady = () => {
+            const district = document.getElementById('booking-district').value;
+            const caseType = document.getElementById('booking-case-type').value;
+            const ready = caseType && state.booking.meetingType && (state.booking.meetingType === 'Virtual' || district);
+            document.getElementById('find-lawyer-btn').disabled = !ready;
+        };
+        
+        document.getElementById('booking-district').addEventListener('change', checkBookingReady);
+        document.getElementById('booking-case-type').addEventListener('change', checkBookingReady);
+
+        document.getElementById('find-lawyer-btn').addEventListener('click', () => {
+            state.booking.district = document.getElementById('booking-district').value;
+            state.booking.caseType = document.getElementById('booking-case-type').value;
+            const filteredLawyers = lawyers.filter(l => (state.booking.meetingType === 'Virtual' || l.district === state.booking.district) && l.specialties.includes(state.booking.caseType));
+            renderLawyerList(filteredLawyers);
+            navigate('lawyerListScreen', 'Available Lawyers', { back: { screen: 'bookingScreen', title: 'New Appointment' } });
+        });
+        
+        document.getElementById('back-to-dash-btn').addEventListener('click', () => navigate('dashboardScreen', `Hi, ${state.currentUser.name.split(' ')[0]}`));
+
+        document.querySelectorAll('.profile-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.profile-tab, .tab-content').forEach(el => el.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(`content-${tab.id.split('-')[1]}`).classList.add('active');
+            });
+        });
+
+        // Storage Permission Modal Logic
+        document.getElementById('upload-doc-btn').addEventListener('click', () => {
+            dom.storageModal.classList.add('active');
+        });
+        dom.storageCancel.addEventListener('click', () => {
+            dom.storageModal.classList.remove('active');
+        });
+        dom.storageProceed.addEventListener('click', () => {
+            dom.storageModal.classList.remove('active');
+            document.getElementById('doc-upload-input').click();
+        });
+
+        document.getElementById('doc-upload-input').addEventListener('change', handleFileUpload);
+
+        document.getElementById('dark-mode-toggle').addEventListener('change', (e) => {
+            state.settings.darkMode = e.target.checked;
+            applySettings();
+        });
+
+        const init = () => {
+            const savedSettings = localStorage.getItem('legalConnectSettings');
+            if(savedSettings) {
+                state.settings = JSON.parse(savedSettings);
+                applySettings();
+            }
+            navigate('splashScreen', 'Welcome');
+        };
+        init();
+    });
     </script>
 </body>
 </html>
